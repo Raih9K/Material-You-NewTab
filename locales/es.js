@@ -174,7 +174,7 @@ const es = {
     "braveThemeInfo": "Visita <a href=\"https://chromewebstore.google.com/category/themes/\" target=\"_blank\">Chrome Web Store de temas</a>, descarga y aplica el tema que combine con la extensión.",
     "firefoxThemeInfo": "Visita <a href=\"https://addons.mozilla.org/firefox/themes/\" target=\"_blank\">Temas para Firefox</a>, descarga y aplica el tema que combine con la extensión.",
     "updateFirefoxHomepage": "Actualizar página de inicio",
-    "updateFirefoxHomepageInfo": "Para cambiar tu página de inicio y también la nueva pestaña, visita <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">este enlace</a> y sigue las instrucciones.",
+    "updateFirefoxHomepageInfo": "Para cambiar tu página de inicio y también la nueva pestaña, visita <a href=\"https://github.com/raih9k/MaterialYouNewTab#-firefox\" target=\"_blank\">este enlace</a> y sigue las instrucciones.",
     "dontShowTips": "No volver a mostrar",
 
     // Footer Toast

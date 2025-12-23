@@ -174,7 +174,7 @@ const uk = {
     "braveThemeInfo": "Відвідати <a href=\"https://chromewebstore.google.com/category/themes/\" target=\"_blank\" rel=\"noopener noreferrer\">Chrome Theme Store</a>, завантажте та застосуйте тему, яка відповідає розширенню.",
     "firefoxThemeInfo": "Відвідати <a href=\"https://addons.mozilla.org/firefox/themes/\" target=\"_blank\" rel=\"noopener noreferrer\">Firefox Themes</a>, завантажте та застосуйте тему, яка відповідає розширенню.",
     "updateFirefoxHomepage": "Оновити стартову сторінку",
-    "updateFirefoxHomepageInfo": "Щоб змінити свою домашню сторінку, як і нову вкладку, відвідайте <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\" rel=\"noopener noreferrer\">це посилання</a> і дотримуйтесь інструкцій.",
+    "updateFirefoxHomepageInfo": "Щоб змінити свою домашню сторінку, як і нову вкладку, відвідайте <a href=\"https://github.com/raih9k/MaterialYouNewTab#-firefox\" target=\"_blank\" rel=\"noopener noreferrer\">це посилання</a> і дотримуйтесь інструкцій.",
     "dontShowTips": "Не показувати знову",
 
     // Footer Toast

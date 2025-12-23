@@ -68,19 +68,19 @@ MYNT: Material You New Tab is a versatile browser extension that personalizes yo
       Use the following command to clone the repository:
 
        ```bash
-       git clone https://github.com/prem-k-r/MaterialYouNewTab.git
+       git clone https://github.com/raih9k/MaterialYouNewTab.git
        ```
 
     - Alternatively, download the latest version as a ZIP file by clicking below:
 
-      [![Download ZIP](https://img.shields.io/badge/Download-ZIP-blue.svg)](https://github.com/prem-k-r/MaterialYouNewTab/archive/refs/heads/main.zip)
+      [![Download ZIP](https://img.shields.io/badge/Download-ZIP-blue.svg)](https://github.com/raih9k/MaterialYouNewTab/archive/refs/heads/main.zip)
 
     - You can also download the ZIP file by clicking on the Code button. On the repository page, look for a green button labeled **Code**. Click on the **Code** button, and in the dropdown menu, select **Download ZIP**.
 
 2. **Stable Release** (v3.2)
 
 <p align="center">
-    <a href="https://github.com/prem-k-r/MaterialYouNewTab/releases/latest"><img src="https://github.com/user-attachments/assets/51048d6d-0b35-4f62-8351-4a3ea52d2213" alt="Download from GitHub" height="48" /></a>
+    <a href="https://github.com/raih9k/MaterialYouNewTab/releases/latest"><img src="https://github.com/user-attachments/assets/51048d6d-0b35-4f62-8351-4a3ea52d2213" alt="Download from GitHub" height="48" /></a>
     <a href="https://chromewebstore.google.com/detail/mynt-material-you-new-tab/jjpokbgpiljgndebfoljdeihhkpcpfgl"><img src="https://github.com/user-attachments/assets/7a829ba4-dcd0-452b-922a-5efacbfda498" alt="Download from Chrome Web Store" height="48" /></a>
     <a href="https://addons.mozilla.org/en-US/firefox/addon/mynt/"><img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Download from Mozilla Add-ons" height="48" /></a>
 </p>
@@ -219,23 +219,23 @@ For a step-by-step walkthrough, watch this [installation guide video](https://yo
 
 | Language                                                                                     | Code  | Translator(s)                                                                         |
 | -------------------------------------------------------------------------------------------- | :---: | ------------------------------------------------------------------------------------- |
-| <img src='https://flagcdn.com/us.svg' width=20> &nbsp; **English**                           |  en   | [XengShi](https://github.com/XengShi/), [Prem](https://github.com/prem-k-r/)          |
+| <img src='https://flagcdn.com/us.svg' width=20> &nbsp; **English**                           |  en   | [XengShi](https://github.com/XengShi/), [Ryan K.](https://github.com/raih9k/)          |
 | <img src='https://flagcdn.com/sa.svg' width=20> &nbsp; **Arabic** - العربية                     | ar-SA | [Mazen](https://github.com/Mazen3Alharbi)                                             |
 | <img src='https://flagcdn.com/az.svg' width=20> &nbsp; **Azerbaijani** - Azərbaycanca        |  az   | [Hasan Bakhtiar](https://github.com/hasanbakhtiar/)                                   |
-| <img src='https://flagcdn.com/bd.svg' width=20> &nbsp; **Bangla** - বাংলা                     |  bn   | [It'z RJ](https://github.com/itz-rj-here/), [Prem](https://github.com/prem-k-r/)      |
+| <img src='https://flagcdn.com/bd.svg' width=20> &nbsp; **Bangla** - বাংলা                     |  bn   | [It'z RJ](https://github.com/itz-rj-here/), [Ryan K.](https://github.com/raih9k/)      |
 | <img src='https://flagcdn.com/cn.svg' width=20> &nbsp; **Chinese** (Simplified) - 简体中文    | zh-CN | [Guy Berryman](https://github.com/Guy-Berryman), [Tianli](https://github.com/TIANLI0), [Konsento](http://github.com/kons10) |
 | <img src='https://flagcdn.com/tw.svg' width=20> &nbsp; **Chinese** (Traditional) - 繁體中文   | zh-TW | [C. Y. Tseng](https://github.com/Eddie40802)                                          |
 | <img src='https://flagcdn.com/cz.svg' width=20> &nbsp; **Czech** - Čeština                   |  cz   | [Michal Šmahel](https://github.com/ceskyDJ/)                                          |
 | <img src='https://flagcdn.com/fr.svg' width=20> &nbsp; **French** - Français                 |  fr   | [422.io](https://github.com/iamwinner422)                                             |
-| <img src='https://flagcdn.com/de.svg' width=20> &nbsp; **German** - Deutsch                  |  de   | [Prem](https://github.com/prem-k-r/)                                                  |
+| <img src='https://flagcdn.com/de.svg' width=20> &nbsp; **German** - Deutsch                  |  de   | [Ryan K.](https://github.com/raih9k/)                                                  |
 | <img src='https://flagcdn.com/gr.svg' width=20> &nbsp; **Greek** - Ελληνικά                  |  el   | [Lefteris T.](https://github.com/trlef19)                                             |
-| <img src='https://flagcdn.com/in.svg' width=20> &nbsp; **Hindi** - हिंदी                       |  hi   | [XengShi](https://github.com/XengShi/), [Prem](https://github.com/prem-k-r/)          |
+| <img src='https://flagcdn.com/in.svg' width=20> &nbsp; **Hindi** - हिंदी                       |  hi   | [XengShi](https://github.com/XengShi/), [Ryan K.](https://github.com/raih9k/)          |
 | <img src='https://flagcdn.com/hu.svg' width=20> &nbsp; **Hungarian** - Magyar                |  hu   | [Zan1456](https://github.com/Zan1456/)                                                |
 | <img src='https://flagcdn.com/id.svg' width=20> &nbsp; **Indonesian** - Bahasa Indonesia     |  idn  | [Ayyas-RF](https://github.com/Ayyas-RF/)                                              |
 | <img src='https://flagcdn.com/it.svg' width=20> &nbsp; **Italian** - Italiano                |  it   | [Claudio Di Maio](https://github.com/ZiClaud/)                                        |
 | <img src='https://flagcdn.com/jp.svg' width=20> &nbsp; **Japanese** - 日本語                 |  ja   | [XengShi](https://github.com/XengShi/), [S-H-Y-A](https://github.com/S-H-Y-A/), [Konsento](http://github.com/kons10) |
 | <img src='https://flagcdn.com/kr.svg' width=20> &nbsp; **Korean** - 한국어                   |  ko   | [XengShi](https://github.com/XengShi/), [codemaster0524](https://github.com/codemaster0524/) |
-| <img src='https://flagcdn.com/in.svg' width=20> &nbsp; **Marathi** - मराठी                   |  mr   | [Prem](https://github.com/prem-k-r/), [Pratik Lokhande](https://github.com/konprtk)   |
+| <img src='https://flagcdn.com/in.svg' width=20> &nbsp; **Marathi** - मराठी                   |  mr   | [Ryan K.](https://github.com/raih9k/), [Pratik Lokhande](https://github.com/konprtk)   |
 | <img src='https://flagcdn.com/np.svg' width=20> &nbsp; **Nepali** - नेपाली                    |  np   | [Bikash Shresha](https://github.com/sthaB-kash/)                                      |
 | <img src='https://flagcdn.com/ir.svg' width=20> &nbsp; **Persian** - فارسی                    |  fa   | [AMIRHOSSEIN](https://github.com/AMIRHOSSEIN-AHMADI-IR)                               |
 | <img src='https://flagcdn.com/pl.svg' width=20> &nbsp; **Polish** - Polski                  | pl | [Dawid Warkowski](https://github.com/dawid9707/)                                         |
@@ -253,7 +253,7 @@ For a step-by-step walkthrough, watch this [installation guide video](https://yo
 
 Check the [Translation Status Page](https://prem-k-r.github.io/MaterialYouNewTab/tools/languagesAnalysis.html) for an overview of completed languages and missing strings analysis.
 
-If you'd like to contribute quotes in any of the languages used in MYNT, check out [Multilingual Quotes](https://github.com/prem-k-r/multilingual-quotes-api).
+If you'd like to contribute quotes in any of the languages used in MYNT, check out [Multilingual Quotes](https://github.com/raih9k/multilingual-quotes-api).
 
 ## 🤝 Contributing
 
@@ -280,7 +280,7 @@ Here is the star history chart for the **MYNT: Material You New Tab** repository
 
 ## ❓ Issues and Support
 
-- If you encounter any issues or bugs, feel free to open an issue on [GitHub](https://github.com/prem-k-r/MaterialYouNewTab/issues).
+- If you encounter any issues or bugs, feel free to open an issue on [GitHub](https://github.com/raih9k/MaterialYouNewTab/issues).
 - For general questions or support, you can contact the repository maintainers through the **Telegram group**: [Join here](https://t.me/Material_You_NewTab).
 
 ## 🛡 Privacy Policy
@@ -291,14 +291,14 @@ We make the following commitments:
 - **No trackers** — no data collection, analytics, or background reporting of any kind
 - **No access to personal information** — all settings, cache, and preferences are stored locally in your browser
 
-For more details, read our [Privacy Policy](https://prem-k-r.github.io/MaterialYouNewTab/privacy-policy.html).
+For more details, read our [Privacy Policy](https://raih9k.github.io/MaterialYouNewTab/privacy-policy.html).
 
 ## 📜 License
 
-Copyright (C) 2024-2025 Prem Kumar
+Copyright (C) 2024-2025 Ryan K.
 
 Copyright (C) 2023-2025 XengShi
 
-> This extension is the continuation of XengShi's Material You NewTab [(_Learn more_)](https://github.com/prem-k-r/MaterialYouNewTab/discussions/28#discussioncomment-13837571).
+> This extension is the continuation of XengShi's Material You NewTab [(_Learn more_)](https://github.com/raih9k/MaterialYouNewTab/discussions/28#discussioncomment-13837571).
 
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). This means you must **not** distribute this software, whether original or modified, to any platform **without** its source code or the reference to its original source code. See the [LICENSE](https://github.com/prem-k-r/MaterialYouNewTab/blob/main/LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). This means you must **not** distribute this software, whether original or modified, to any platform **without** its source code or the reference to its original source code. See the [LICENSE](https://github.com/raih9k/MaterialYouNewTab/blob/main/LICENSE) file for details.

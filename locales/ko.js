@@ -173,7 +173,7 @@ const ko = {
     "braveThemeInfo": "<a href=\"https://chromewebstore.google.com/category/themes/\" target=\"_blank\">Chrome 테마 스토어</a>에서 확장 프로그램과 어울리는 테마를 다운로드해서 적용하세요.",
     "firefoxThemeInfo": "<a href=\"https://addons.mozilla.org/firefox/themes/\" target=\"_blank\">Firefox 테마</a>에서 확장 프로그램과 어울리는 테마를 다운로드해서 적용하세요.",
     "updateFirefoxHomepage": "홈페이지 변경",
-    "updateFirefoxHomepageInfo": "새 탭과 함께 홈페이지도 바꾸려면 <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">이 링크</a>를 확인하세요.",
+    "updateFirefoxHomepageInfo": "새 탭과 함께 홈페이지도 바꾸려면 <a href=\"https://github.com/raih9k/MaterialYouNewTab#-firefox\" target=\"_blank\">이 링크</a>를 확인하세요.",
     "dontShowTips": "다시 보지 않기",
 
     // Dialog boxes (alerts)

@@ -173,7 +173,7 @@ const pl = {
     "braveThemeInfo": "Odwiedź <a href=\"https://chromewebstore.google.com/category/themes/\" target=\"_blank\">Chrome Theme Store</a>, pobierz i zastosuj motyw pasujący do rozszerzenia.",
     "firefoxThemeInfo": "Odwiedź <a href=\"https://addons.mozilla.org/firefox/themes/\" target=\"_blank\">Firefox Themes</a>, pobierz i zastosuj motyw pasujący do rozszerzenia.",
     "updateFirefoxHomepage": "Zaktualizuj stronę główną",
-    "updateFirefoxHomepageInfo": "Aby zmienić stronę główną również na nową kartę, odwiedź <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">ten link</a> i postępuj zgodnie z instrukcjami.",
+    "updateFirefoxHomepageInfo": "Aby zmienić stronę główną również na nową kartę, odwiedź <a href=\"https://github.com/raih9k/MaterialYouNewTab#-firefox\" target=\"_blank\">ten link</a> i postępuj zgodnie z instrukcjami.",
     "dontShowTips": "Nie pokazuj tego ponownie",
 
     // Dialog boxes (alerts)

@@ -9,7 +9,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
 @font-face {
-	font-family: "poppins";
+	font-family: "VT323", "poppins";
 	src: url("./fonts/Poppins-Regular.ttf") format("truetype");
 }
 
@@ -23,7 +23,7 @@
 
 :root {
 	/* Default font */
-	--main-font-family: "poppins", "Poppins", sans-serif;
+	--main-font-family:"VT323",  "poppins", "Poppins", sans-serif;
 
 	/* 🔵🔵🔵 */
 	/* ⚠️ Please don't change the color value or names for Blue (if ? modifying code would be difficult */
