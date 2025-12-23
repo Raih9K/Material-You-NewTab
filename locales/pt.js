@@ -17,6 +17,8 @@ const pt = {
     "bookmarksInfo": "Mostrar barra lateral de favoritos",
     "ai_tools_button": "Ferramentas de IA",
     "enable_ai_tools": "Mostrar atalhos para ferramentas de IA",
+    "aiToolsSettingsText": "Configurações de IA",
+    "aiToolsSettingsInfo": "Gerenciar atalhos de ferramentas de IA",
     "googleAppsMenuText": "Apps Google",
     "googleAppsMenuInfo": "Mostrar atalhos para Apps Google",
     "googleAppsHover": "Apps do Google",
@@ -46,6 +48,8 @@ const pt = {
     "hideWeatherInfo": "Desativar os widgets do clima",
     "hideWeatherBox": "Ocultar Cartão do Tempo",
     "hideWeatherBoxInfo": "Mostrar apenas o pílula de temperatura",
+    "minMaxTempText": "Temperatura Min-Max",
+    "minMaxTempSubText": "Substitua 'Sensação' por 'Min-Max'",
 
     // Search
     "micIconTitle": "Ocultar Ícone do Microfone",
@@ -101,6 +105,7 @@ const pt = {
     "conditionText": "Olá! Como você está hoje?",
     "humidityLevel": "Umidade",
     "feelsLike": "Sensação de",
+    "minMaxTemp": "Min ~ Max",
     "location": "Terra",
     "enterBtn": "Pesquisar",
     "searchPlaceholder": "Digite aqui...",
@@ -134,9 +139,14 @@ const pt = {
     "gemini": "Gemini",
     "copilot": "Copilot",
     "claude": "Claude",
+    "grok": "Grok",
+    "qwen": "Qwen",
     "perplexity": "Perplexity",
     "deepseek": "DeepSeek",
     "metaAI": "Meta AI",
+    "firefly": "Adobe Firefly",
+    "aiSettingsIntro": "Selecione quais ferramentas de IA exibir",
+    "resetAISettingsBtn": "Redefinir",
 
     // Theme
     "enableDarkMode": "Modo Escuro",
@@ -161,9 +171,9 @@ const pt = {
     "braveThemeInfo": 'Visite <a href="https://chromewebstore.google.com/category/themes/" target="_blank">Chrome Theme Store</a>, Baixe e aplique o tema que corresponde ao tema da extensão.',
     "firefoxThemeInfo": 'Visite <a href="https://addons.mozilla.org/firefox/themes/" target="_blank">Firefox Themes</a>, Baixe e aplique o tema que corresponde ao tema da extensão.',
     "updateFirefoxHomepage": "Atualizar Pagina Inicial",
-    "updateFirefoxHomepageInfo": "Para mudar sua página inicial como o NewTab, visite <a href=\"https://github.com/XengShi/materialYouNewTab#-firefox\" target=\"_blank\">este link</a> e siga as instruções.",
+    "updateFirefoxHomepageInfo": "Para mudar sua página inicial como o NewTab, visite <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">este link</a> e siga as instruções.",
     "dontShowTips": "Não mostrar novamente",
-    
+
     // Dialog boxes (alerts)
     "okText": "OK",
     "yesText": "Sim",

@@ -51,6 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---------------------------- Search Suggestions ----------------------------
 
+let lastInteractionBy = null;
+let originalSearchText = ""; // Store the original search text
 const resultBox = document.getElementById("resultBox");
 
 // Show the result box
@@ -68,23 +70,13 @@ function hideResultBox() {
 showResultBox();
 hideResultBox();
 
-const languageCode = (localStorage.getItem("selectedLanguage") || "en").slice(0, 2);
-document.getElementById("searchQ").addEventListener("input", async function () {
+searchInput.addEventListener("input", async function () {
     const searchsuggestionscheckbox = document.getElementById("searchsuggestionscheckbox");
     if (searchsuggestionscheckbox.checked) {
-        var selectedOption = document.querySelector("input[name='search-engine']:checked").value;
-        var searchEngines = {
-            engine1: "https://www.google.com/search?q=",
-            engine2: "https://duckduckgo.com/?q=",
-            engine3: "https://bing.com/?q=",
-            engine4: "https://search.brave.com/search?q=",
-            engine5: "https://www.youtube.com/results?search_query=",
-            engine6: "https://www.google.com/search?tbm=isch&q=",
-            engine7: "https://www.reddit.com/search/?q=",
-            engine8: `https://${languageCode}.wikipedia.org/wiki/Special:Search?search=`,
-            engine9: "https://www.quora.com/search?q="
-        };
         const query = this.value;
+
+        // Store original text when user starts typing
+        originalSearchText = query;
 
         if (query.length > 0) {
             try {
@@ -103,23 +95,21 @@ document.getElementById("searchQ").addEventListener("input", async function () {
                         resultItem.classList.add("resultItem");
                         resultItem.textContent = suggestion;
                         resultItem.setAttribute("data-index", index);
+
                         resultItem.onclick = () => {
-                            if (selectedOption === "engine0") {
-                                try {
-                                    if (isFirefox) {
-                                        browser.search.query({ text: suggestion });
-                                    } else {
-                                        chrome.search.query({ text: suggestion });
-                                    }
-                                } catch (error) {
-                                    var fallbackUrl = searchEngines.engine1 + encodeURIComponent(suggestion);
-                                    window.location.href = fallbackUrl;
-                                }
-                            } else {
-                                var resultlink = searchEngines[selectedOption] + encodeURIComponent(suggestion);
-                                window.location.href = resultlink;
-                            }
+                            performSearch(suggestion);
                         };
+
+                        resultItem.addEventListener("mouseenter", () => {
+                            // Remove existing highlight
+                            const currentlyActive = resultBox.querySelector(".active");
+                            if (currentlyActive) currentlyActive.classList.remove("active");
+
+                            // Mark this as active
+                            resultItem.classList.add("active");
+                            lastInteractionBy = "mouse";
+                        });
+
                         resultBox.appendChild(resultItem);
                     });
 
@@ -140,55 +130,70 @@ document.getElementById("searchQ").addEventListener("input", async function () {
     }
 });
 
-let isMouseOverResultBox = false;
-// Track mouse entry and exit within the resultBox
-resultBox.addEventListener("mouseenter", () => {
-    isMouseOverResultBox = true;
-    // Remove keyboard highlight
-    const activeItem = resultBox.querySelector(".active");
-    if (activeItem) {
-        activeItem.classList.remove("active");
-    }
-});
-
-resultBox.addEventListener("mouseleave", () => {
-    isMouseOverResultBox = false;
-});
-
-document.getElementById("searchQ").addEventListener("keydown", function (e) {
-    if (isMouseOverResultBox) {
-        return; // Ignore keyboard events if the mouse is in the resultBox
-    }
+searchInput.addEventListener("keydown", function (e) {
     const activeItem = resultBox.querySelector(".active");
     let currentIndex = activeItem ? parseInt(activeItem.getAttribute("data-index")) : -1;
 
-    if (resultBox.children.length > 0) {
-        if (e.key === "ArrowDown") {
+    if (resultBox.children.length > 0 && resultBox.classList.contains("show")) {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
             e.preventDefault();
+            lastInteractionBy = "keyboard";
+
             if (activeItem) {
                 activeItem.classList.remove("active");
             }
-            currentIndex = (currentIndex + 1) % resultBox.children.length;
+
+            // Calculate new index based on direction
+            if (e.key === "ArrowDown") {
+                currentIndex = (currentIndex + 1) % resultBox.children.length;
+            } else { // ArrowUp
+                currentIndex = (currentIndex - 1 + resultBox.children.length) % resultBox.children.length;
+            }
+
             resultBox.children[currentIndex].classList.add("active");
 
             // Ensure the active item is visible within the result box
             const activeElement = resultBox.children[currentIndex];
-            activeElement.scrollIntoView({ block: "nearest" });
-        } else if (e.key === "ArrowUp") {
+            activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+            // Auto-complete the search input with selected suggestion
+            const suggestionText = activeElement.textContent;
+            this.value = suggestionText;
+
+        } else if ((e.key === "ArrowRight" || e.key === "Tab") && activeItem && lastInteractionBy === "mouse") {
+            // Check if cursor is at end
+            const cursorAtEnd = this.selectionStart === this.value.length;
+
+            if (cursorAtEnd) {
+                e.preventDefault();
+                const suggestionText = activeItem.textContent;
+                this.value = suggestionText;
+            }
+
+        } else if (e.key === "Enter") {
             e.preventDefault();
+            if (activeItem) {
+                // Selected suggestion + Enter = search
+                activeItem.click();
+
+            } else {
+                // No selection, search with current input value
+                performSearch(this.value);
+            }
+
+        } else if (e.key === "Escape") {
+            e.preventDefault();
+            // Restore original search text
+            this.value = originalSearchText;
+            // Remove any active highlights
             if (activeItem) {
                 activeItem.classList.remove("active");
             }
-            currentIndex = (currentIndex - 1 + resultBox.children.length) % resultBox.children.length;
-            resultBox.children[currentIndex].classList.add("active");
-
-            // Ensure the active item is visible within the result box
-            const activeElement = resultBox.children[currentIndex];
-            activeElement.scrollIntoView({ block: "nearest" });
-        } else if (e.key === "Enter" && activeItem) {
-            e.preventDefault();
-            activeItem.click();
         }
+    } else if (e.key === "Enter") {
+        // No suggestions available, search with current input
+        e.preventDefault();
+        performSearch(this.value);
     }
 });
 
@@ -201,10 +206,22 @@ function getClientParam() {
     return "firefox"; // Default to Firefox if the browser is not recognized
 }
 
+let lastRedditRequestTime = 0;
+
 async function getAutocompleteSuggestions(query) {
     const clientParam = getClientParam(); // Get the browser client parameter dynamically
     var selectedOption = document.querySelector('input[name="search-engine"]:checked').value;
-    var searchEnginesapi = {
+
+    // 🔒 Throttle Reddit API calls
+    const now = Date.now();
+    if (selectedOption === "engine7") {
+        if (now - lastRedditRequestTime < 1000) {
+            return []; // skip call if within 1 second
+        }
+        lastRedditRequestTime = now;
+    }
+
+    const searchSuggestionsAPI = {
         engine0: `https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`,
         engine1: `https://www.google.com/complete/search?client=${clientParam}&q=${encodeURIComponent(query)}`,
         engine2: `https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`,
@@ -215,11 +232,8 @@ async function getAutocompleteSuggestions(query) {
     };
 
     const useproxyCheckbox = document.getElementById("useproxyCheckbox");
-    let apiUrl = searchEnginesapi[selectedOption] || searchEnginesapi["engine1"];
-    if (useproxyCheckbox.checked) {
-        if (selectedOption === "engine7") {
-            apiUrl = searchEnginesapi["engine1"];
-        }
+    let apiUrl = searchSuggestionsAPI[selectedOption] || searchSuggestionsAPI["engine1"];
+    if (useproxyCheckbox.checked && selectedOption !== "engine7") {
         apiUrl = proxyurl + encodeURIComponent(apiUrl);
     }
 
@@ -236,7 +250,8 @@ async function getAutocompleteSuggestions(query) {
                 }
             });
             return suggestions;
-        } else if (selectedOption === "engine7" && useproxyCheckbox.checked === false) {
+
+        } else if (selectedOption === "engine7") {
             const suggestions = [];
             if (data && data.data && data.data.children) {
                 data.data.children.forEach(post => {
@@ -247,8 +262,8 @@ async function getAutocompleteSuggestions(query) {
                 });
             }
             return suggestions;
-        } else {
 
+        } else {
             return data[1];
         }
     } catch (error) {
@@ -277,12 +292,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return await confirmPrompt(message, agreeText, cancelText);
     }
 
+    // Requests optional host permissions for suggestion APIs
+    async function requestHostPermissions() {
+        return new Promise((resolve) => {
+            chrome.permissions.request({
+                origins: [
+                    "https://www.google.com/complete/search?client=*",
+                    "https://duckduckgo.com/ac/?q=*",
+                    "https://search.brave.com/api/suggest?q=*",
+                    "https://*.wikipedia.org/w/api.php?action=opensearch&search=*"
+                ]
+            }, (granted) => {
+                resolve(granted);
+            });
+        });
+    }
+
     // Add change event listeners for the checkboxes
-    searchsuggestionscheckbox.addEventListener("change", function () {
+    searchsuggestionscheckbox.addEventListener("change", async function () {
         saveCheckboxState("searchsuggestionscheckboxState", searchsuggestionscheckbox);
         if (searchsuggestionscheckbox.checked) {
             proxybypassField.classList.remove("inactive");
             saveActiveStatus("proxybypassField", "active");
+
+            if (!isFirefoxAll) {
+                await requestHostPermissions();
+            }
         } else {
             proxybypassField.classList.add("inactive");
             saveActiveStatus("proxybypassField", "inactive");

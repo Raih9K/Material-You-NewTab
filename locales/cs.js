@@ -12,11 +12,13 @@ const cs = {
     "editShortcutsList": "Uložené zkratky",
     "editShortcutsListInfo": "Nové zkratky můžete přidat klepnutím na ikonku „+“. Upravit existující můžete klepnutím na název nebo URL adresu zkratky.",
     "adaptiveIconText": "Adaptivní ikony",
-    "adaptiveIconInfoText": "Ikony zkratek budou odpovídat barvě motivu a zmenší se",
+    "adaptiveIconInfoText": "Ikony zkratek se adaptují vzhledem k motivu",
     "bookmarksText": "Záložky",
     "bookmarksInfo": "Zobrazí boční panel se záložkami",
     "ai_tools_button": "AI nástroje",
     "enable_ai_tools": "Zobrazí zkratky AI nástrojů",
+    "aiToolsSettingsText": "Nastavení AI nástrojů",
+    "aiToolsSettingsInfo": "Nastavte si zkratky AI nástrojů",
     "googleAppsMenuText": "Google aplikace",
     "googleAppsMenuInfo": "Zobrazí zkratky Google aplikací",
     "googleAppsHover": "Google aplikace",
@@ -46,6 +48,8 @@ const cs = {
     "hideWeatherInfo": "Vypne widgety s počasím",
     "hideWeatherBox": "Skrýt kartu s počasím",
     "hideWeatherBoxInfo": "Zobrazí pouze pilulku s teplotou",
+    "minMaxTempText": "Teplota daná rozsahem",
+    "minMaxTempSubText": "Nahradí pocitovou teplotu rozsahem minimální a maximální teploty",
 
     // Search
     "micIconTitle": "Skrýt ikonu mikrofonu",
@@ -53,7 +57,7 @@ const cs = {
     "hideSearchWith": "Skrýt vyhledávače",
     "hideSearchWithInfo": "Mezi vyhledávači přepnete klepnutím na jejich ikonky",
     "motivationalQuotesText": "Motivační citáty",
-    "motivationalQuotesInfo": "Zobrazí citáty (zatím v angličtině) pod vyhledávacím polem",
+    "motivationalQuotesInfo": "Zobrazí citáty pod vyhledávacím polem",
     "search_suggestions_button": "Návrhy ve vyhledávání",
     "search_suggestions_text": "Zapne návrhy vyhledávání",
 
@@ -101,6 +105,7 @@ const cs = {
     "conditionText": "Dobrý den! Jak se máte?",
     "humidityLevel": "Vlhkost",
     "feelsLike": "Pocitová teplota",
+    "minMaxTemp": "Min až max",
     "location": "Země",
     "enterBtn": "Vyhledat",
     "searchPlaceholder": "Zadejte hledaný výraz…",
@@ -134,17 +139,25 @@ const cs = {
     "gemini": "Gemini",
     "copilot": "Copilot",
     "claude": "Claude",
+    "grok": "Grok",
+    "qwen": "Qwen",
     "perplexity": "Perplexity",
     "deepseek": "DeepSeek",
     "metaAI": "Meta AI",
+    "firefly": "Adobe Firefly",
+    "aiSettingsIntro": "Vyberte, jaké AI nástroje budou zobrazeny",
+    "resetAISettingsBtn": "Resetovat",
 
     // Theme
-    "enableDarkMode": "Tmavý režim (experimentální)",
-    "enableDarkModeInfo": "Zapne tmavý režim aktivního motivu",
+    "lightThemed": "Výchozí (světlý režim)",
+    "darkThemed": "Temný režim",
+    "systemThemed": "Podle režimu systému",
 
     // Wallpaper and settings
     "uploadWallpaperText": "Nahrát tapetu",
     "rangColor": "Vybrat barvu",
+    "opacityTitle": "Průhlednost",
+    "adjustOpacityDesc": "Upraví průhlednost uživatelského rozhraní",
     "backupText": "Zálohovat",
     "restoreText": "Obnovit",
     "resetsettings": "Resetovat nastavení",
@@ -161,8 +174,12 @@ const cs = {
     "braveThemeInfo": 'Navštivte <a href="https://chromewebstore.google.com/category/themes/" target="_blank">Obchod s motivy pro Chrome</a>, stáhněte a aktivujte motiv, který sedí k rozšíření.',
     "firefoxThemeInfo": 'Navštivte <a href="https://addons.mozilla.org/firefox/themes/" target="_blank">Motivy vzhledu Firefox</a>, stáhněte a aktivujte motiv, který sedí k rozšíření.',
     "updateFirefoxHomepage": "Aktualizace domovské stránky",
-    "updateFirefoxHomepageInfo": "Pro změnu domovské stránky, stejně jako nové karty, navštivte <a href=\"https://github.com/XengShi/materialYouNewTab#-firefox\" target=\"_blank\">tento odkaz</a> a následujte instrukce (anglicky).",
+    "updateFirefoxHomepageInfo": "Pro změnu domovské stránky, stejně jako nové karty, navštivte <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">tento odkaz</a> a následujte instrukce (anglicky).",
     "dontShowTips": "Již nezobrazovat",
+
+    // Footer Toast
+    "footerToastTitle": "Vidíte baner ve spodní části obrazovky?",
+    "footerToastMessage": "Skryjete ho tak, že na něho klepnete pravým tlačítkem a zvolíte „Skrýt zápatí na stránce Nová karta“.",
 
     // Dialog boxes (alerts)
     "okText": "Budiž",
@@ -182,4 +199,5 @@ const cs = {
     "invalidBackup": "Vybrali jste neplatný soubor se zálohou.",
     "deleteBookmark": "Opravdu si přejete smazat záložku „{title}“?",
     "UnsupportedBrowser": "Ve vašem prohlížeči nejsou záložky podporované",
+    "resetShortcutsPrompt": "Budou odstraněny všechny uložené zkratky a následně se obnoví výchozí sada zkratek. Přejete si pokračovat?",
 };

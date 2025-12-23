@@ -12,11 +12,13 @@ const en = {
     "editShortcutsList": "Saved Shortcuts",
     "editShortcutsListInfo": "You can add new shortcuts by clicking the \"+\" icon or edit existing ones by clicking on the shortcut name or URL.",
     "adaptiveIconText": "Adaptive Icons",
-    "adaptiveIconInfoText": "Shortcut icons will match the theme color and appear smaller",
+    "adaptiveIconInfoText": "Shortcut icons will adapt to theme",
     "bookmarksText": "Bookmarks",
     "bookmarksInfo": "Show bookmarks sidebar",
-    "ai_tools_button": "AI-Tools",
+    "ai_tools_button": "AI Tools",
     "enable_ai_tools": "Show shortcuts for AI tools",
+    "aiToolsSettingsText": "AI Tools Settings",
+    "aiToolsSettingsInfo": "Manage AI tools shortcuts",
     "googleAppsMenuText": "Google Apps",
     "googleAppsMenuInfo": "Show shortcuts for Google Apps",
     "googleAppsHover": "Google Apps",    // Keep this shorter
@@ -29,7 +31,7 @@ const en = {
 
     // Clock
     "hideClockBox": "Hide Clock",
-    "hideClockBoxInfo": "Show or hide the clock and date",
+    "hideClockBoxInfo": "Hide the clock and date",
     "digitalclocktitle": "Digital Clock",
     "digitalclockinfo": "Switch to the digital clock",
     "timeformattitle": "12-Hour Format",
@@ -137,17 +139,25 @@ const en = {
     "gemini": "Gemini",
     "copilot": "Copilot",
     "claude": "Claude",
+    "grok": "Grok",
+    "qwen": "Qwen",
     "perplexity": "Perplexity",
     "deepseek": "DeepSeek",
     "metaAI": "Meta AI",
+    "firefly": "Adobe Firefly",
+    "aiSettingsIntro": "Select which AI tools to display",
+    "resetAISettingsBtn": "Reset",
 
     // Theme
-    "enableDarkMode": "Dark Mode (Experimental)",
-    "enableDarkModeInfo": "Enable dark mode themes",
+    "lightThemed": "Default (Light Theme)",
+    "darkThemed": "Dark Theme",
+    "systemThemed": "Follow System Theme",
 
     // Wallpaper and settings
     "uploadWallpaperText": "Upload Wallpaper",    // Keep this short
     "rangColor": "Pick color",    // Keep this short
+    "opacityTitle": "Opacity",
+    "adjustOpacityDesc": "Adjust interface transparency",
     "backupText": "Backup",
     "restoreText": "Restore",
     "resetsettings": "Reset Settings",
@@ -161,11 +171,15 @@ const en = {
     "changeBrowserTheme": "Change Browser Theme",
     "chromeThemeInfo": "Click the three dots (⋮) > More tools > Customize Chrome, then choose a color that matches the extension theme.",
     "edgeThemeInfo": "Goto Settings > Appearance, then choose a color that matches the extension theme.",
-    "braveThemeInfo": 'Visit <a href="https://chromewebstore.google.com/category/themes/" target="_blank">Chrome Theme Store</a>, download and apply the theme that matches the extension.',
-    "firefoxThemeInfo": 'Visit <a href="https://addons.mozilla.org/firefox/themes/" target="_blank">Firefox Themes</a>, download and apply the theme that matches the extension.',
+    "braveThemeInfo": "Visit <a href=\"https://chromewebstore.google.com/category/themes/\" target=\"_blank\">Chrome Theme Store</a>, download and apply the theme that matches the extension.",
+    "firefoxThemeInfo": "Visit <a href=\"https://addons.mozilla.org/firefox/themes/\" target=\"_blank\">Firefox Themes</a>, download and apply the theme that matches the extension.",
     "updateFirefoxHomepage": "Update Homepage",
-    "updateFirefoxHomepageInfo": "To change your homepage like the new tab as well, visit <a href=\"https://github.com/XengShi/materialYouNewTab#-firefox\" target=\"_blank\">this link</a> and follow the instructions.",
+    "updateFirefoxHomepageInfo": "To change your homepage like the new tab as well, visit <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">this link</a> and follow the instructions.",
     "dontShowTips": "Don't show it again",
+
+    // Footer Toast
+    "footerToastTitle": "Seeing a banner at the bottom?",
+    "footerToastMessage": "To hide it, right-click it and select 'Hide Footer on New Tab Page'.",
 
     // Dialog boxes (alerts)
     "okText": "OK",
@@ -185,4 +199,5 @@ const en = {
     "invalidBackup": "Invalid backup file selected.",
     "deleteBookmark": "Are you sure you want to delete the bookmark \"{title}\"?",  // Do not translate {title}
     "UnsupportedBrowser": "Bookmarks are not supported in your browser.",
+    "resetShortcutsPrompt": "All saved shortcuts will be deleted and reset to default. Do you want to continue?"
 };

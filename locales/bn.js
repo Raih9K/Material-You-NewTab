@@ -17,6 +17,8 @@ const bn = {
     "bookmarksInfo": "বুকমার্কস সাইডবার দেখুন",
     "ai_tools_button": "এআই সরঞ্জাম",
     "enable_ai_tools": "এআই সরঞ্জামের শর্টকাট প্রদর্শন করুন",
+    "aiToolsSettingsText": "এআই সরঞ্জাম সেটিংস",
+    "aiToolsSettingsInfo": "এআই সরঞ্জামের শর্টকাট পরিচালনা করুন",
     "googleAppsMenuText": "গুগল অ্যাপস",
     "googleAppsMenuInfo": "গুগল অ্যাপসের শর্টকাট প্রদর্শন করুন",
     "googleAppsHover": "গুগল অ্যাপস",
@@ -46,6 +48,8 @@ const bn = {
     "hideWeatherInfo": "আবহাওয়া উইজেট বন্ধ করুন",
     "hideWeatherBox": "আবহাওয়া কার্ড লুকান",
     "hideWeatherBoxInfo": "শুধুমাত্র তাপমাত্রা পিল দেখান",
+    "minMaxTempText": "সর্বনিম্ন-সর্বাধিক তাপমাত্রা",
+    "minMaxTempSubText": "অনুভূতি তাপমাত্রার পরিবর্তে সর্বনিম্ন ও সর্বাধিক তাপমাত্রা দেখান",
 
     // Search
     "micIconTitle": "মাইক্রোফোন আইকন লুকান",
@@ -103,6 +107,7 @@ const bn = {
     "conditionText": "হ্যালো! আজ আপনি কেমন আছেন?",
     "humidityLevel": "আর্দ্রতা",
     "feelsLike": "অনুভূতি হয়",
+    "minMaxTemp": "নিম্ন ~ উচ্চ",
     "location": "পৃথিবী",
     "enterBtn": "সার্চ করুন",
     "searchPlaceholder": "এখানে টাইপ করুন...",
@@ -136,17 +141,25 @@ const bn = {
     "gemini": "জেমিনি",
     "copilot": "কোপাইলট",
     "claude": "ক্লড",
+    "grok": "গ্রোক",
+    "qwen": "ক্বেন",
     "perplexity": "পারপ্লেক্সিটি",
     "deepseek": "ডিপসিক",
     "metaAI": "মেটা এআই",
+    "firefly": "অ্যাডোবি ফায়ারফ্লাই",
+    "aiSettingsIntro": "যে এআই টুলগুলো দেখাতে চান তা নির্বাচন করুন",
+    "resetAISettingsBtn": "রিসেট করুন",
 
     // Theme
-    "enableDarkMode": "ডার্ক মোড (পরীক্ষামূলক)",
-    "enableDarkModeInfo": "ডার্ক মোড থিম সক্রিয় করুন",
+    "lightThemed": "ডিফল্ট (লাইট থিম)",
+    "darkThemed": "ডার্ক থিম",
+    "systemThemed": "সিস্টেম থিম অনুসরণ করুন",
 
     // Wallpaper and settings
     "uploadWallpaperText": "ওয়ালপেপার দিন",
     "rangColor": "রঙ নির্বাচন করুন",
+    "opacityTitle": "অস্বচ্ছতা",
+    "adjustOpacityDesc": "ইন্টারফেসের স্বচ্ছতা সামঞ্জস্য করুন",
     "backupText": "ব্যাকআপ করুন",
     "restoreText": "পুনরুদ্ধার করুন",
     "resetsettings": "সেটিংস পুনরায় সেট করুন",
@@ -163,8 +176,12 @@ const bn = {
     "braveThemeInfo": '<a href="https://chromewebstore.google.com/category/themes/" target="_blank">ক্রোম থিম স্টোর</a> এ যান, থিম ডাউনলোড করুন এবং এক্সটেনশনের থিমের সাথে মিলিয়ে একটি রঙ নির্বাচন করুন।',
     "firefoxThemeInfo": '<a href="https://addons.mozilla.org/firefox/themes/" target="_blank">ফায়ারফক্স থিম</a> এ যান, থিম ডাউনলোড করুন এবং এক্সটেনশনের থিমের সাথে মিলিয়ে একটি রঙ নির্বাচন করুন।',
     "updateFirefoxHomepage": "হোমপেজ আপডেট করুন",
-    "updateFirefoxHomepageInfo": "আপনার হোমপেজকে নতুন ট্যাবের মতো পরিবর্তন করতে, <a href=\"https://github.com/XengShi/materialYouNewTab#-firefox\" target=\"_blank\">এই লিংকে</a> যান এবং নির্দেশিকা অনুসরণ করুন।",
+    "updateFirefoxHomepageInfo": "আপনার হোমপেজকে নতুন ট্যাবের মতো পরিবর্তন করতে, <a href=\"https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target=\"_blank\">এই লিংকে</a> যান এবং নির্দেশিকা অনুসরণ করুন।",
     "dontShowTips": "এটি আর দেখাবেন না",
+
+    // Footer Toast
+    "footerToastTitle": "নীচে কোনো ব্যানার দেখাচ্ছে?",
+    "footerToastMessage": "এটি লুকাতে, এর উপর রাইট-ক্লিক করুন এবং 'নিউ ট্যাব পেজে ফুটার লুকান' নির্বাচন করুন।",
 
     // Dialog boxes (alerts)
     "okText": "ঠিক আছে",
@@ -184,5 +201,5 @@ const bn = {
     "invalidBackup": "অবৈধ ব্যাকআপ ফাইল নির্বাচিত হয়েছে।",
     "deleteBookmark": "আপনি কি নিশ্চিত যে আপনি \"{title}\" বুকমার্কটি মুছে ফেলতে চান?",
     "UnsupportedBrowser": "আপনার ব্রাউজারে বুকমার্ক সমর্থিত নয়।",
-    "minOneshortcut": "আপনাকে অন্তত একটি শর্টকাট রাখতে হবে।"
+    "resetShortcutsPrompt": "সব সংরক্ষিত শর্টকাট মুছে ফেলা হবে এবং ডিফল্ট অবস্থায় পুনরায় সেট করা হবে। আপনি কি চালিয়ে যেতে চান?"
 };

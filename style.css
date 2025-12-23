@@ -127,12 +127,20 @@
 	/* Global variables */
 	--gap: 30px;
 	--round: 30px;
+	--transparency: 90%;
 
 	/* Shortcut bar */
 	--max-shortcut-bar-width: 60vw;
 	--shortcut-bar-gap-and-padding: 10px;
 	--shortcut-size: 50px;
 	--always-show-dock-background: 0;
+
+	/* standard: Smooth start and end */
+	--md-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+	/* entering: Fast start, slow end (Snappy opening, glides to stop) */
+	--md-motion-decelerate: cubic-bezier(0, 0, 0.2, 1);
+	/* exiting: Slow start, fast end (Pushes out quickly at the end) */
+	--md-motion-accelerate: cubic-bezier(0.4, 0, 1, 1);
 }
 
 /* Theme */
@@ -150,6 +158,36 @@
 .lessDark {
 	background-color: var(--bg-color-blue);
 	fill: var(--bg-color-blue);
+}
+
+body[data-bg="wallpaper"] .menuBar .accentColor,
+body[data-bg="wallpaper"] #shortcuts-section .accentColor {
+	fill: var(--darkColor-blue);
+}
+
+body[data-bg="wallpaper"] .bgLightTint:not(.notTargeted) {
+	fill: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
+}
+
+.shortcutLogoContainer .bgLightTint {
+	fill: var(--accentLightTint-blue) !important;
+}
+
+body[data-bg="wallpaper"] .lessDark.targeted {
+	fill: color-mix(
+		in srgb,
+		var(--bg-color-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
 }
 
 /* ⚫🟣🟡🔵🔴🟠⚪🟢 */
@@ -173,7 +211,6 @@ body {
 	justify-content: center;
 	width: 100%;
 	min-height: 100vh;
-	/* background-color: red; */
 	overflow: auto;
 	background-image: var(--bg-image, none);
 	background-size: cover;
@@ -181,50 +218,77 @@ body {
 	background-position: center;
 	background-attachment: fixed;
 	height: 100%; /* Ensure the image fits the viewport height */
-	margin: 0; /* Remove margin to avoid unwanted spacing */
+	margin: 0;
 }
 
-html:has(body[data-bg="color"] .menuBar #enableDarkModeCheckbox:checked):not(
-		:has(#darkTheme:checked)
-	) {
+/* Apply dark mode when: Dark Mode is selected manually, OR System Theme is selected */
+html:has(
+		body[data-bg="color"] .menuBar select option[value="dark"]:checked
+	):not(:has(#darkTheme:checked)),
+html:has(
+		body[data-bg="color"][sysTheme="systemDark"]
+			.menuBar
+			select
+			option[value="system"]:checked
+	):not(:has(#darkTheme:checked)) {
 	filter: invert(1) hue-rotate(180deg);
 	-webkit-filter: invert(1) hue-rotate(180deg);
+
 	& #darkTheme,
 	& .favicon {
 		filter: invert(1) hue-rotate(180deg);
 		-webkit-filter: invert(1) hue-rotate(180deg);
 	}
+
 	& .menuBar,
-	& #prompt-modal-blur {
-		background-color: #0000001f;
+	& #bookmarksContainer {
+		background-color: #0000000f;
 	}
+
+	& #prompt-modal-blur,
+	& .ai-modal-overlay {
+		background-color: #ffffff5f;
+	}
+
 	--whitishColor-blue: #f2f2f2;
 }
 
-body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
+body[data-bg="wallpaper"]:has(.menuBar select option[value="dark"]:checked):not(
 		:has(#darkTheme:checked)
 	)
 	> *:not(.menuBar, #bookmarksContainer),
-body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
+body[data-bg="wallpaper"]:has(.menuBar select option[value="dark"]:checked):not(
 		:has(#darkTheme:checked)
 	)
+	:is(.menuCont, .bookmark-sidebar),
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
+		.menuBar select option[value="system"]:checked
+	):not(:has(#darkTheme:checked))
+	> *:not(.menuBar, #bookmarksContainer),
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
+		.menuBar select option[value="system"]:checked
+	):not(:has(#darkTheme:checked))
 	:is(.menuCont, .bookmark-sidebar) {
 	filter: invert(1) hue-rotate(180deg);
 	-webkit-filter: invert(1) hue-rotate(180deg);
+
 	& #darkTheme,
 	& .favicon {
 		filter: invert(1) hue-rotate(180deg);
 		-webkit-filter: invert(1) hue-rotate(180deg);
 	}
+
 	--whitishColor-blue: #f2f2f2;
 }
+
+/* -------------------------------------- */
 
 /* Search suggestions box */
 .resultBox {
 	max-height: 222px;
 	overflow-y: auto;
 	position: absolute;
-	left: 0;
+	inset-inline-start: 0;
 	width: 100%;
 	border-radius: 25px;
 	margin-top: 10px;
@@ -236,6 +300,7 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	transform: translateY(-70px);
 	transition: opacity 0.5s ease, transform 0.5s ease, z-index 0.5s ease;
 	pointer-events: none;
+	backdrop-filter: blur(4px);
 }
 
 .searchbar:has(:placeholder-shown) ~ .resultBox.show {
@@ -293,7 +358,7 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	display: inline-block;
 	margin: 10px;
 	top: var(--gap);
-	right: var(--gap);
+	inset-inline-end: var(--gap);
 	font-size: 25px;
 	/* Set the size of the dots */
 	background: transparent;
@@ -311,6 +376,15 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	border-radius: 25%;
 	padding: 1px;
 	cursor: pointer;
+}
+
+body[data-bg="wallpaper"] .dot-icon {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) * 2),
+		transparent
+	);
+	backdrop-filter: blur(4px);
 }
 
 .theme-transition .dot-icon {
@@ -333,14 +407,24 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	position: absolute;
 	top: 120%;
 	/* Position below the icon */
-	left: 50%;
+	inset-inline-start: 50%;
 	transform: translateX(-50%);
-	font-size: 12px;
+	font-size: 0.75rem;
 	opacity: 0;
 	transition: opacity 0.3s ease;
-	white-space: nowrap;
+	max-width: 115px;
+	min-width: 50px;
+	width: max-content;
+	white-space: normal;
 	z-index: 3;
-	/* Set z-index */
+}
+
+body[data-bg="wallpaper"] .tooltip-text {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) calc(var(--transparency) * 2),
+		transparent
+	);
 }
 
 /* Show tooltip on hover */
@@ -377,6 +461,12 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	gap: 10px;
 	padding: 20px 10px;
 	background-color: var(--accentLightTint-blue);
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) 80%,
+		transparent
+	);
+	backdrop-filter: blur(10px);
 	border-radius: 30px;
 	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 	border: 8px solid var(--bg-color-blue);
@@ -386,12 +476,13 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	/* Center icons within each grid cell */
 	position: fixed;
 	top: 85px;
-	right: 15px;
+	inset-inline-end: 15px;
 	max-height: calc(40px * 3 + 10px * 2 + 290px);
 	width: fit-content;
 	/* Limit to 12 icons (3 rows * icon size + gaps) */
 	overflow-x: hidden;
-	/* Add vertical scrollbar when needed */
+	overflow-y: scroll;
+	scroll-behavior: smooth;
 	box-sizing: border-box;
 	z-index: 3; /* This should be higher that z-index of [.googleAppsCont] */
 }
@@ -404,15 +495,12 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	align-items: center;
 	text-align: center;
 	padding: 10px;
-	border-radius: 10px;
+	border-radius: 15px;
 	transition: transform 0.3s ease, background-color 0.3s ease;
 	text-decoration: none;
 	cursor: pointer;
 	position: relative;
 	min-width: 100px;
-	/* Ensure consistent width */
-	background-color: var(--accentLightTint-blue);
-	/* Default background */
 }
 
 /* Icon Styling */
@@ -451,8 +539,12 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 /* Hover Effect for Icon Item */
 .icon-item:hover {
 	background-color: var(--bg-color-blue);
-	transform: scale(1.1);
-	/* Add zoom-in effect */
+	background-color: color-mix(
+		in srgb,
+		var(--bg-color-blue) var(--transparency),
+		transparent
+	);
+	transform: translateY(-4px);
 }
 
 /* Show Full Label on Hover for Multi-word Labels */
@@ -501,7 +593,6 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 /* ----------------- End of Google App Menu ----------------- */
 
 /* ----------------- Start of Bookmark System ----------------- */
-
 #bookmarksContainer {
 	background-color: #0000004f;
 	backdrop-filter: blur(15px) saturate(160%);
@@ -509,7 +600,7 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	width: 100%;
 	height: 100%;
 	top: 0;
-	right: 0;
+	inset-inline-end: 0;
 	opacity: 0;
 	transition: all 0.5s;
 	pointer-events: none;
@@ -526,7 +617,7 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	display: inline-block;
 	margin: 10px;
 	top: var(--gap);
-	right: var(--gap);
+	inset-inline-end: var(--gap);
 	font-size: 25px;
 	background-color: var(--accentLightTint-blue);
 	border: none;
@@ -537,8 +628,16 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	transition: right 0.3s ease;
 }
 
+body[data-bg="wallpaper"] .bookmark-button {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) * 2),
+		transparent
+	);
+}
+
 .bookmark-button:has(~ .googleAppsCont[style="display: flex;"]) {
-	right: calc(2 * var(--gap) + 36px);
+	inset-inline-end: calc(2 * var(--gap) + 36px);
 }
 
 /* Show tooltip on hover */
@@ -549,21 +648,20 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 
 .bookmark-button svg {
 	fill: var(--darkColor-blue);
-	background-color: var(--accentLightTint-blue);
 }
 
 .bookmark-sidebar {
 	width: min(380px, 100vw);
 	position: fixed;
-	right: max(-380px, -100vw);
+	inset-inline-end: max(-380px, -100vw);
 	top: 0;
 	height: 100%;
 	background-color: var(--accentLightTint-blue);
 	color: white;
-	transition: right 0.3s ease;
+	transition: inset-inline-end 0.3s var(--md-motion-ease);
 	z-index: 5;
 	display: block;
-	border-radius: 0 0 0 var(--round);
+	border-end-start-radius: var(--round);
 	box-sizing: border-box;
 }
 
@@ -571,7 +669,7 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 	position: absolute;
 	width: 30px;
 	height: 30px;
-	left: -30px;
+	inset-inline-start: -30px;
 }
 
 .bookmark-sidebar-header {
@@ -583,12 +681,12 @@ body[data-bg="wallpaper"]:has(.menuBar #enableDarkModeCheckbox:checked):not(
 }
 
 .bookmark-sidebar.open {
-	right: 0;
+	inset-inline-end: 0;
 }
 
 body #bookmarkButton.bookmark-button.rotate {
 	color: var(--accentLightTint-blue);
-	right: 412px;
+	inset-inline-end: 412px;
 	z-index: 5;
 }
 
@@ -602,7 +700,8 @@ body #bookmarkButton.bookmark-button.rotate {
 .bookmark-search-container {
 	position: relative;
 	width: 100%;
-	padding: 30px 10px 16px 10px;
+	padding: 10px;
+	padding-top: 25px;
 	border-radius: var(--round);
 	display: flex;
 	align-items: center;
@@ -618,15 +717,17 @@ body #bookmarkButton.bookmark-button.rotate {
 	filter: invert(1);
 	height: 18px;
 	opacity: 0.5;
-	left: 9%;
-	top: calc(50% + 7px);
+	inset-inline-start: 9%;
+	top: calc(50% + 8px);
 	transform: translateY(-50%);
 	position: absolute;
 }
 
 #bookmarkSearch {
 	width: 95%;
-	padding: 10px 36px 10px 43px;
+	padding-block: 10px;
+	padding-inline-start: 43px;
+	padding-inline-end: 36px;
 	border-radius: var(--round);
 	font-size: 16px;
 	background-color: var(--whitishColor-blue);
@@ -646,7 +747,7 @@ body #bookmarkButton.bookmark-button.rotate {
 
 #clearSearchButton {
 	position: absolute;
-	right: 9%;
+	inset-inline-end: 9%;
 	top: calc(50% + 7px);
 	transform: translateY(-50%);
 	background: none;
@@ -660,9 +761,10 @@ body #bookmarkButton.bookmark-button.rotate {
 	list-style-type: none;
 	padding: 0;
 	margin: 0;
-	text-align: left;
-	height: calc(100% - 260px);
+	text-align: start;
+	height: calc(100% - 242px);
 	overflow-y: auto; /* Add vertical scrollbar */
+	scroll-behavior: smooth;
 	overflow-x: hidden;
 }
 
@@ -692,11 +794,11 @@ body #bookmarkButton.bookmark-button.rotate {
 	}
 }
 
-/* Updated CSS */
 .bookmark-controls-container {
 	display: flex;
-	gap: 32px; /* Space between Sort by and View as sections */
-	padding: 8px 32px;
+	justify-content: space-between;
+	gap: 40px; /* Space between Sort by and View as sections */
+	padding: 6px 32px;
 }
 
 .bookmark-control-group {
@@ -706,56 +808,69 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 .bookmark-control-group h3 {
-	font-size: 1rem;
+	font-size: 0.96rem;
 	color: var(--darkerColor-blue);
 	margin: 0;
 	white-space: nowrap;
+	text-align: center;
 }
 
 .button-group {
-	display: flex;
-	gap: 8px; /* Space between buttons */
+	display: inline-flex;
+	border: 2px solid var(--bg-color-blue);
+	border-radius: 100px;
+	background-color: rgba(255, 255, 255, 0.8);
+	padding: 2px;
 }
 
-/* Shared button styling */
 .bookmark-sort-button,
 .bookmark-view-as-button {
 	background: transparent;
-	border-radius: 20px;
-	border: 2px solid var(--darkColor-blue);
-	color: var(--darkColor-blue);
-	min-width: 60px;
-	font-size: 12px;
-	padding: 2px 9px;
+	border: none;
+	border-radius: 100px;
+	font-size: 0.75rem;
 	cursor: pointer;
-	transition: all 0.2s ease;
+	width: 64px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 4px 8px;
+	color: var(--darkColor-blue);
+	transition: background-color 0.2s, color 0.2s;
+}
+
+#sortAlphabetical {
+	width: 45px;
+}
+
+#sortTimeAdded {
+	width: 90px;
+}
+
+.bookmark-sort-button:hover,
+.bookmark-view-as-button:hover {
+	white-space: normal;
 }
 
 /* Active states */
 .bookmark-sort-button.active,
 #bookmarkGridCheckbox:checked ~ #bookmarkViewGrid,
 #bookmarkGridCheckbox:not(:checked) ~ #bookmarkViewList {
-	background: var(--darkColor-blue);
+	background-color: var(--darkColor-blue);
 	color: white;
 }
 
 #bookmarkList ul {
-	padding-left: 10px;
+	padding: 7px 0;
+	padding-inline-start: 10px;
 	list-style-type: none;
 	font-weight: normal;
-}
-
-#bookmarkList .folder ul {
-	padding-top: 10px;
 }
 
 #bookmarkList li {
 	padding: 2px;
 	border: none;
 	position: relative;
-}
-#bookmarkList li:is(.folder) {
-	padding: 10px 0 10px 10px;
 }
 
 #bookmarkList li:not(.folder) {
@@ -782,9 +897,11 @@ body #bookmarkButton.bookmark-button.rotate {
 	padding: 2px;
 	flex-direction: column;
 }
+
 #bookmarkList:is(.grid-view) li a .favicon {
 	margin: 20px auto 24px auto;
 }
+
 #bookmarkList:is(.grid-view) li a:has(.favicon)::after,
 #bookmarkList:is(.grid-view) li a:has(.favicon)::before {
 	content: "";
@@ -800,6 +917,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	box-sizing: border-box;
 	border-radius: 32px;
 }
+
 #bookmarkList:is(.grid-view) li a:has(.favicon)::before {
 	background: var(--bg-color-blue);
 	width: 36px;
@@ -813,7 +931,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	text-decoration: none;
 	/* word-break: break-word; */
 	padding: 8px;
-	padding-right: 24px;
+	padding-inline-end: 24px;
 	border-radius: 8px;
 	width: 100%;
 	display: flex;
@@ -835,7 +953,7 @@ body #bookmarkButton.bookmark-button.rotate {
 .favicon {
 	width: 18px;
 	height: 18px;
-	margin-right: 5px;
+	margin-inline-end: 5px;
 	vertical-align: middle;
 	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
 }
@@ -849,6 +967,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	cursor: pointer;
 	font-weight: bolder;
 	color: var(--textColorDark-blue);
+	position: relative;
 }
 
 .hidden {
@@ -861,21 +980,34 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 .folder svg {
-	margin-right: 5px; /* Adjust this value for more or less space */
+	margin-inline-end: 5px; /* Adjust this value for more or less space */
 	vertical-align: middle; /* Aligns the icon with the text */
-}
-
-.folder ul {
-	padding-left: 20px;
 }
 
 .folder.open > ul {
 	display: block;
 }
 
+.folder::before {
+	content: "";
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-right: 8px;
+	vertical-align: middle;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid currentColor;
+	transition: transform 0.2s ease;
+}
+
+.folder:not(.open)::before {
+	transform: rotate(-90deg);
+}
+
 #bookmarkList:is(.grid-view) .bookmark-delete-button {
 	top: 12px;
-	right: 6px;
+	inset-inline-end: 6px;
 }
 
 .bookmark-delete-button {
@@ -884,7 +1016,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	color: var(--darkColor-blue);
 	cursor: pointer;
 	position: absolute;
-	right: 10px; /* Position it to the right */
+	inset-inline-end: 10px; /* Position it to the right */
 	top: 50%;
 	transform: translateY(-50%);
 	opacity: 0;
@@ -912,14 +1044,12 @@ body #bookmarkButton.bookmark-button.rotate {
 	padding: 20px;
 }
 
-/* Modal Content */
 #editBookmarkModal .modal-content {
 	display: flex;
 	flex-direction: column;
-	gap: 15px;
+	gap: 20px;
 }
 
-/* Modal Header */
 #editBookmarkModal h2 {
 	text-align: center;
 	font-size: 1.5rem;
@@ -927,36 +1057,64 @@ body #bookmarkButton.bookmark-button.rotate {
 	margin-top: 5px;
 }
 
-/* Input Fields */
-#editBookmarkModal input {
-	width: 100%;
-	padding: 10px 14px;
-	font-size: 0.9rem;
-	border: 1px solid var(--accentLightTint-blue);
-	border-radius: 14px;
-	outline: none;
-	transition: 0.2s;
-}
-
-#editBookmarkModal input:focus {
-	border-color: var(--darkColor-blue);
-	box-shadow: 0 0 3px var(--darkColor-blue);
-}
-
-/* Favicon Display */
 #editBookmarkFavicon {
 	display: block;
-	margin: 7px auto;
+	margin: 0 auto 5px;
 	width: 32px;
 	height: 32px;
 	border-radius: 2px;
 }
 
-/* Modal Buttons */
+.floating-label-field {
+	position: relative;
+	margin-top: 12px;
+}
+
+.floating-label-field input {
+	width: 100%;
+	padding: 12px 16px;
+	font-size: 0.9rem;
+	border: 1px solid var(--bg-color-blue);
+	border-radius: 14px;
+	outline: none;
+	background-color: var(--accentLightTint-blue);
+	transition: border-color 0.2s;
+}
+
+.floating-label-field input:focus {
+	border-color: var(--darkColor-blue);
+}
+
+.floating-label-field input::placeholder {
+	color: transparent;
+}
+
+.floating-label-field label {
+	position: absolute;
+	inset-inline-start: 14px;
+	top: 13.4px;
+	padding: 0 5px;
+	color: color-mix(in srgb, var(--darkColor-blue) 75%, white);
+	font-size: 0.9rem;
+	border-radius: 5px;
+	transition: 0.2s ease all;
+	pointer-events: none;
+}
+
+/* Float label when focused or has content */
+.floating-label-field input:focus + label,
+.floating-label-field input:not(:placeholder-shown) + label {
+	top: -19px;
+	inset-inline-start: 12px;
+	font-size: 0.8rem;
+	color: var(--darkColor-blue);
+	background-color: var(--bg-color-blue);
+}
+
 #editBookmarkModal .modal-buttons {
 	display: flex;
 	justify-content: space-between;
-	margin-top: 11px;
+	margin-top: 4px;
 	gap: 20px;
 }
 
@@ -981,23 +1139,20 @@ body #bookmarkButton.bookmark-button.rotate {
 #editBookmarkModal button:hover {
 	background: var(--darkerColor-blue);
 }
-
 /* ----------------- End of Bookmark System ----------------- */
 
 /* ------------------ To Do List Section -------------------- */
-
 .todoListCont {
 	position: fixed;
 	display: inline-block;
 	margin: 10px;
 	top: var(--gap);
-	left: var(--gap);
+	inset-inline-start: var(--gap);
 	font-size: 25px;
 	background: transparent;
 	border: none;
 	cursor: pointer;
 	z-index: 2;
-	/* Set z-index */
 }
 
 /* Show tooltip on hover */
@@ -1009,18 +1164,25 @@ body #bookmarkButton.bookmark-button.rotate {
 .todo-container {
 	display: grid;
 	gap: 10px;
-	padding: 10px 5px;
-	background-color: var(--bg-color-blue);
+	padding: 12px 6px 6px 6px;
+	background-color: var(--accentLightTint-blue);
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) 80%,
+		transparent
+	);
+	backdrop-filter: blur(2px);
 	border-radius: 30px;
-	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
 	border: 8px solid var(--bg-color-blue);
-	grid-template-columns: 320px;
+	grid-template-columns: 330px;
 	justify-items: center;
 	position: fixed;
 	top: 85px;
 	left: 15px;
 	max-height: calc(40px * 3 + 10px * 2 + 290px);
 	overflow-y: auto;
+	scroll-behavior: smooth;
 	box-sizing: border-box;
 	z-index: 3;
 }
@@ -1053,12 +1215,42 @@ body #bookmarkButton.bookmark-button.rotate {
 	}
 }
 
+#todoListHeading {
+	font-size: 1.4rem;
+	text-align: center;
+}
+
+.todo-container .addTaskCont {
+	background: white;
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 10%, white);
+	padding: 0;
+	margin-bottom: 4px;
+	border-radius: 20px;
+	height: 42px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	outline: none;
+}
+
+.addTaskCont:focus-within {
+	outline: 1px solid var(--darkColor-blue);
+}
+
+.dark-theme .addTaskCont {
+	background-color: #5f5f5f;
+}
+
+.dark-theme .addTaskCont:focus-within {
+	outline: 1px solid var(--accentLightTint-dark);
+}
+
 #todoAdd {
-	height: 40px;
-	border-radius: 100px;
-	padding: 1px 13px 0 13px;
+	height: 100%;
+	border-radius: 20px;
+	padding: 0px 12px;
 	border: none;
-	font-size: 1.5rem;
+	font-size: 1.8rem;
 	background-color: var(--darkColor-blue);
 	color: white;
 	scale: 0.78;
@@ -1081,7 +1273,7 @@ body #bookmarkButton.bookmark-button.rotate {
 #todoInput {
 	width: 100%;
 	height: 80%;
-	margin: auto auto auto 16px;
+	margin-inline-start: 15px;
 	outline: none;
 	border: none;
 	background-color: #00000000;
@@ -1098,13 +1290,6 @@ body #bookmarkButton.bookmark-button.rotate {
 	color: #757575;
 }
 
-.todo-container .searchbar-content {
-	background: var(--accentLightTint-blue);
-	padding: 0;
-	border-radius: 20px;
-	width: 100%;
-}
-
 .todolist {
 	width: 100%;
 	display: flex;
@@ -1118,11 +1303,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 100%;
 	display: flex;
 	background-color: var(--darkColor-blue);
+	background-color: color-mix(in srgb, var(--darkColor-blue) 95%, transparent);
 	color: var(--whitishColor-blue);
 	border-radius: 8px;
 	list-style-type: none;
 	font-size: 1rem;
-	padding: 12px 56px 12px 32px;
+	padding-block: 12px;
+	padding-inline-start: 36px;
+	padding-inline-end: 88px;
 	user-select: none;
 	cursor: pointer;
 	position: relative;
@@ -1139,7 +1327,7 @@ body #bookmarkButton.bookmark-button.rotate {
 		contain;
 	top: 50%;
 	transform: translateY(-50%);
-	left: 8px;
+	inset-inline-start: 8px;
 	transition: all 0.3s ease;
 	user-select: none;
 }
@@ -1153,10 +1341,33 @@ body #bookmarkButton.bookmark-button.rotate {
 	text-decoration: line-through;
 }
 
+.todolistitem.edit {
+	color: white;
+	text-decoration: none !important;
+}
+
+.todolistitem.edit .todoeditbtn {
+	background-image: url("./svgs/todo-edit-done.svg");
+}
+
+.todolist .edit-input {
+	color: inherit;
+	outline: none;
+	border: 1px solid #ccc;
+	height: 24px;
+	width: inherit;
+	font-size: inherit;
+	border-radius: 6px;
+	background-color: transparent;
+	padding: 0 3px;
+	margin-inline-start: -4px;
+}
+
 .todolistitem .todoremovebtn,
-.todolistitem .todopinbtn {
+.todolistitem .todopinbtn,
+.todoeditbtn {
 	position: absolute;
-	right: 6px;
+	inset-inline-end: 6px;
 	top: 50%;
 	transform: translateY(-50%);
 	width: 24px;
@@ -1165,7 +1376,6 @@ body #bookmarkButton.bookmark-button.rotate {
 	line-height: 1.2;
 	color: var(--bg-color-blue);
 	text-align: center;
-	border-radius: 50%;
 	transition: all 0.3s ease;
 	user-select: none;
 }
@@ -1179,9 +1389,22 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 .todolistitem .todopinbtn {
-	right: 28px;
+	inset-inline-end: 28px;
 	background: url("./svgs/todo-pin-stroke.svg") no-repeat center center /
 		contain;
+}
+
+.todolistitem .todoeditbtn {
+	background: url("./svgs/todo-edit-do.svg") no-repeat center center / contain;
+}
+
+.todoeditbtn {
+	inset-inline-end: 56px;
+	opacity: 0.8;
+}
+
+.todoeditbtn:hover {
+	opacity: 1;
 }
 
 .todolistitem.pinned .todopinbtn {
@@ -1192,6 +1415,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	border-top-left-radius: 18px;
 	border-top-right-radius: 18px;
 }
+
 .todolistitem:last-child {
 	border-bottom-left-radius: 18px;
 	border-bottom-right-radius: 18px;
@@ -1243,10 +1467,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 20px;
 	height: 20px;
 	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
+	inset: 0;
 	margin: auto;
 }
 
@@ -1325,6 +1546,8 @@ body #bookmarkButton.bookmark-button.rotate {
 	word-wrap: break-word;
 	max-width: 18.75rem;
 	max-height: 4.3rem;
+	min-height: 2.5rem;
+	min-width: 2.5rem;
 	overflow-x: clip;
 	overflow-y: scroll;
 	text-overflow: ellipsis;
@@ -1334,6 +1557,15 @@ body #bookmarkButton.bookmark-button.rotate {
 	padding: 3px 10px;
 	width: fit-content;
 	border-radius: 10px;
+}
+
+/* When wallpaper is active */
+body[data-bg="wallpaper"] #userText {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
 }
 
 #userText::-webkit-scrollbar {
@@ -1346,6 +1578,15 @@ body #bookmarkButton.bookmark-button.rotate {
 	padding: 3px 10px;
 	width: fit-content;
 	border-radius: 10px;
+}
+
+/* When wallpaper is active */
+body[data-bg="wallpaper"] #date {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
 }
 
 .digidate {
@@ -1361,9 +1602,10 @@ body #bookmarkButton.bookmark-button.rotate {
 	fill: var(--darkColor-blue);
 	font-size: 8rem;
 	font-weight: lighter;
-	/* background-color: yellow; */
 	margin: auto;
 	width: fit-content;
+	direction: ltr;
+	unicode-bidi: isolate;
 }
 
 #digihours {
@@ -1380,6 +1622,15 @@ body #bookmarkButton.bookmark-button.rotate {
 	}
 }
 
+.no-blink {
+	animation: none !important;
+	opacity: 1 !important;
+}
+
+html[lang="ta"] .digiclock {
+	font-size: 6.4rem;
+}
+
 .clockRegion {
 	transition: transform 0.25s ease-in-out;
 }
@@ -1390,10 +1641,14 @@ body #bookmarkButton.bookmark-button.rotate {
 
 /* __________end of clock___________________ */
 .leftDiv {
-	/* padding-right: 100px; */
+	/* padding-inline-end: 100px; */
 	transform: translateX(-100px);
 	/* background-color: rgba(102, 51, 153, 0.404); */
 	/* height: fit-content; */
+}
+
+:dir(rtl) .leftDiv {
+	transform: translateX(100px);
 }
 
 .rightDiv {
@@ -1468,14 +1723,66 @@ body #bookmarkButton.bookmark-button.rotate {
 .tilesContainer .tiles span {
 	position: absolute;
 	top: 0;
-	left: 46px;
 	bottom: 0;
 	margin: auto;
 	color: var(--textColorDark-blue);
 	height: fit-content;
 }
 
-.humidityBar {
+.tilesContainer #location {
+	inset-inline-start: 46px;
+}
+
+#feelsLike {
+	left: 46px;
+	padding-right: 12px;
+	width: calc(100% - 46px);
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+.opacityBarControl {
+	opacity: 0;
+	transform: translateY(20px);
+	pointer-events: none;
+	position: relative;
+	height: auto;
+	max-height: 0;
+	overflow: hidden;
+	transition: opacity 0.3s ease, transform 0.5s ease, max-height 0.4s ease;
+}
+
+body[data-bg="wallpaper"] .opacityBarControl {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+	max-height: 121px;
+}
+
+/* Max-height for specific languages with different font */
+html[lang="vi"] body[data-bg="wallpaper"] .opacityBarControl {
+	max-height: 113px;
+}
+
+html[lang="ur"] body[data-bg="wallpaper"] .opacityBarControl {
+	max-height: 142px;
+}
+
+html[lang="fa"] body[data-bg="wallpaper"] .opacityBarControl {
+	max-height: 123px;
+}
+
+html[lang="ja"] body[data-bg="wallpaper"] .opacityBarControl {
+	max-height: 124px;
+}
+
+.opacityBar {
+	margin-top: 10px;
+	cursor: grab;
+}
+
+.humidityBar,
+.opacityBar {
 	border-radius: 20px;
 	height: 40px;
 	width: 100%;
@@ -1493,11 +1800,12 @@ body #bookmarkButton.bookmark-button.rotate {
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 66%;
-	right: 0;
+	inset-inline-end: 0;
 	border-radius: 100%;
 }
 
-.humidityBar .thinLine {
+.humidityBar .thinLine,
+.opacityBar .thinLine {
 	position: absolute;
 	width: calc(100% - 60px);
 	background-color: var(--whitishColor-blue);
@@ -1508,7 +1816,16 @@ body #bookmarkButton.bookmark-button.rotate {
 	margin: auto;
 }
 
-.humidityBar .slider {
+.humidityBar .thinLine {
+	width: calc(100% - 60px);
+}
+
+.opacityBar .thinLine {
+	width: 100%;
+}
+
+.humidityBar .slider,
+.opacityBar .opacitySlider {
 	height: 100%;
 	width: calc(10% - 60px);
 	/*100-60px because humidityIconContainer is 40px Width and 20px is margin which is = to 60*/
@@ -1516,22 +1833,38 @@ body #bookmarkButton.bookmark-button.rotate {
 	background-color: var(--darkColor-blue);
 	border-radius: 100px;
 	position: absolute;
+}
+
+.humidityBar .slider {
+	width: calc(10% - 60px);
+	/*100-60px because humidityIconContainer is 40px Width and 20px is margin which is = to 60*/
+	min-width: 42%;
 	transition: width 1s;
 }
 
-#humidityLevel {
+body[data-bg="wallpaper"] .humidityBar .thinLine {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 2),
+		transparent
+	);
+}
+
+.opacityBar .opacitySlider {
+	min-width: 20%;
+}
+
+#humidityLevel,
+#opacityLevel {
 	color: var(--whitishColor-blue);
 	width: fit-content;
 	position: absolute;
 	bottom: 0;
 	top: 0;
 	margin: auto;
-	left: 20px;
+	inset-inline-start: 20px;
 	height: fit-content;
-}
-
-#feelsLike {
-	padding-right: 12px;
+	font-size: 1rem;
 }
 
 /* End of _____________________- */
@@ -1541,7 +1874,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	position: relative;
 	height: 100%;
 	aspect-ratio: 1/1;
-	margin-left: var(--gap);
+	margin-inline-start: var(--gap);
 	animation: rAndAnm 1s;
 	/* transition: rotate 1s; */
 }
@@ -1558,10 +1891,7 @@ body #bookmarkButton.bookmark-button.rotate {
 
 .rightDiv .topDiv .rAndakar .wInfo {
 	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	inset: 0;
 	margin: auto;
 	transform: translateX(14px);
 	width: 100px;
@@ -1580,7 +1910,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	font-size: 0.4em;
 	position: relative;
 	top: -1.1em;
-	left: 3px;
+	inset-inline-start: 3px;
 	color: var(--darkColor-blue);
 }
 
@@ -1588,20 +1918,31 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 80px;
 	height: 80px;
 	margin-top: -11px;
-	margin-left: -30px;
+	margin-inline-start: -30px;
 }
 
-.lang-ur .rightDiv .topDiv .rAndakar .wInfo {
+:dir(rtl) #wIcon {
+	margin-inline-start: 50px;
+}
+
+html[lang="ur"] .rightDiv .topDiv .rAndakar .wInfo {
 	height: 95%;
 }
 
-.lang-ur #temp {
+html[lang="ur"] #temp {
 	font-size: 3.3rem;
 }
 
-.lang-ur #wIcon {
+html[lang="ur"] #wIcon {
 	width: 70px;
 	height: 70px;
+}
+
+html[lang="ta"] #temp {
+	position: relative;
+	font-size: 3rem;
+	left: -14px;
+	padding-bottom: 12px;
 }
 
 /* ------------End of Weather Pill------------- */
@@ -1614,10 +1955,18 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 100%;
 	height: 60px;
 	border-radius: var(--round);
-	/* background-color: var(--accentLightTint-blue); */
+	background-color: var(--accentLightTint-blue);
 	position: relative;
 	outline: 2px solid #00000000;
 	transition: outline 0.3s;
+}
+
+body[data-bg="wallpaper"] .searchbar {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) + 10%),
+		transparent
+	);
 }
 
 .searchbar.active {
@@ -1629,14 +1978,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	height: 30px;
 	position: absolute;
 	margin-top: 16px;
-	margin-left: 16px;
+	margin-inline-start: 16px;
 }
 
 .searchbar-content {
 	display: flex;
 	align-items: center;
 	height: 100%;
-	padding-right: 10px;
+	padding-inline-end: 10px;
 }
 
 #searchQ {
@@ -1644,12 +1993,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	height: 80%;
 	top: 0;
 	bottom: 0;
-	margin: auto auto auto 20px;
+	margin-block: auto;
+	margin-inline: 20px auto;
 	outline: none;
 	border: none;
+	color: #000;
 	background-color: #00000000;
 	padding: 0 2px;
-	margin-left: 55px;
+	margin-inline-start: 58px;
 	font-size: 1rem;
 }
 
@@ -1658,9 +2009,13 @@ body #bookmarkButton.bookmark-button.rotate {
 	color: #757575;
 }
 
+body[data-bg="wallpaper"] #searchQ::placeholder {
+	color: color-mix(in srgb, #757575 calc(var(--transparency) + 10%), #000);
+}
+
 .searchControls {
-	margin-left: 10px;
-	right: 10px;
+	margin-inline-start: 10px;
+	inset-inline-end: 10px;
 	display: flex;
 	align-items: center;
 	height: 100%;
@@ -1671,7 +2026,7 @@ body #bookmarkButton.bookmark-button.rotate {
 .micIcon {
 	width: 40px;
 	height: 40px;
-	margin-right: 10px;
+	margin-inline-end: 10px;
 	display: flex;
 	align-items: center;
 	position: relative;
@@ -1685,6 +2040,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	border: 2px solid transparent;
 }
 
+body[data-bg="wallpaper"] .micIcon {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 2),
+		transparent
+	);
+}
+
 .theme-transition .micIcon {
 	transition: all 0.5s;
 }
@@ -1692,18 +2055,15 @@ body #bookmarkButton.bookmark-button.rotate {
 .micIcon::after {
 	content: "";
 	position: absolute;
-	top: -3px;
-	left: -3px;
-	right: -3px;
-	bottom: -3px;
+	inset: -3px;
 	border-radius: 50%;
 	border: 2px solid transparent;
 }
 
 .micActive::after,
 .micIcon:hover::after {
-	border-left: 2px dotted var(--darkColor-blue);
-	border-right: 2px solid var(--darkColor-blue);
+	border-inline-start: 2px dotted var(--darkColor-blue);
+	border-inline-end: 2px solid var(--darkColor-blue);
 	border-top: 2px dashed var(--darkerColor-blue);
 	border-bottom: 2px dashed var(--darkerColor-blue);
 	animation: micAnimation 1s ease-in-out infinite;
@@ -1733,7 +2093,7 @@ body #bookmarkButton.bookmark-button.rotate {
 #enterBtn {
 	height: 40px;
 	border-radius: 100px;
-	padding: 0 26px;
+	padding: 0 23px;
 	border: none;
 	font-size: 1.1rem;
 	background-color: var(--darkColor-blue);
@@ -1742,8 +2102,7 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 #enterBtn:hover {
-	background-color: var(--darkColor-blue);
-	color: var(--whitishColor-blue);
+	background-color: var(--darkerColor-blue);
 	cursor: pointer;
 }
 
@@ -1777,10 +2136,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	justify-content: center;
 	padding: 12px;
 	position: relative;
-	margin-right: 5px; /* 16px */
+	margin-inline-end: 5px;
 	border-radius: var(--round);
 	cursor: pointer;
-	transition: border-radius 0.4s, margin-left 0.4s;
+	transition: border-radius 0.4s, margin-inline-start 0.4s;
+}
+
+:dir(rtl) .searchWithCont .hint {
+	z-index: 2;
 }
 
 .searchWithCont .hint:hover {
@@ -1788,20 +2151,18 @@ body #bookmarkButton.bookmark-button.rotate {
 	color: #fff;
 }
 
-.searchWithCont .hint:active {
-	border-radius: 20px;
-	margin-left: 5px;
+body[data-bg="wallpaper"] .searchWithCont .hint:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) var(--transparency),
+		transparent
+	);
 }
 
-/* .searchWithCont .hint::after {
-	content: "";
-	position: absolute;
-	width: 6px;
-	height: 100%;
-	background-color: var(--accentLightTint-blue);
-	border-radius: 3px;
-	right: -20px;
-} */
+.searchWithCont .hint:active {
+	border-radius: 20px;
+	margin-inline-start: 5px;
+}
 
 .searchEnginesContainer {
 	position: relative;
@@ -1809,17 +2170,18 @@ body #bookmarkButton.bookmark-button.rotate {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 20px;
-	padding-left: 20px;
+	padding-inline-start: 20px;
 	opacity: 1;
 	transform: translateX(0);
 }
+
 .searchEnginesContainer.show {
-	animation: slideIn 0.3s ease-in-out forwards;
+	animation: slideIn 0.3s var(--md-motion-ease) forwards;
 }
 
 @keyframes slideIn {
 	from {
-		transform: translateX(100%);
+		transform: translateX(20px);
 		opacity: 0.2;
 	}
 	to {
@@ -1844,13 +2206,15 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 30px;
 	height: 30px;
 	background-color: var(--darkColor-blue);
+	fill: #fffffff0;
 	border-radius: 100%;
-	margin-left: 4px;
+	margin-inline-start: 5px;
 	padding: 3px;
 }
 
 .searchEnginesContainer .search-engine label {
-	margin: 0 14px 0 10px;
+	margin-block: 0;
+	margin-inline: 10px 13px;
 	cursor: pointer;
 }
 
@@ -1865,7 +2229,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	border-radius: 50%;
 	border: 2px solid var(--whitishColor-blue);
 	outline: none;
-	margin-right: 8px;
+	margin-inline-end: 8px;
 	cursor: pointer;
 	/* transition: 0.2s; */
 }
@@ -1884,6 +2248,8 @@ body #bookmarkButton.bookmark-button.rotate {
 	position: relative;
 	display: flex;
 	font-size: 1rem;
+	direction: ltr; /* Remove when multilingual quote is supported */
+	unicode-bidi: isolate;
 }
 
 .quotesContainer {
@@ -1896,33 +2262,80 @@ body #bookmarkButton.bookmark-button.rotate {
 	line-height: 28px;
 }
 
+.authorWrapper {
+	position: absolute;
+	bottom: 0;
+	inset-inline-end: 0;
+	display: flex;
+	align-items: flex-end;
+}
+
 .authorName {
 	background: var(--bg-color-blue);
-	position: absolute;
-	bottom: 0;
-	right: 0;
+	position: relative;
 	padding: 6px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	height: 40px;
-	border-top-left-radius: 20px;
-	border-bottom-right-radius: 20px;
+	width: 40px;
+	border-start-start-radius: 20px;
+	border-end-end-radius: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	transition: width 0.4s var(--md-motion-ease);
+	box-sizing: border-box;
 }
 
-.authorName .qtRounder {
+.authorName span {
+	display: inline-block;
+	padding: 0;
+}
+
+.qtRounder {
 	position: absolute;
 	width: 20px;
 	height: 20px;
-	left: -20px;
+	inset-inline-start: -20px;
 	transform: rotate(90deg);
-	bottom: 0;
 }
 
-.authorName .qtRounder2 {
+.qtRounder2 {
 	position: absolute;
 	width: 20px;
 	height: 20px;
-	right: 0;
-	transform: rotate(90deg);
+	inset-inline-end: 0;
 	top: -20px;
+	transform: rotate(90deg);
+}
+
+body[data-bg="wallpaper"] .quotesContainer {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
+	text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
+.dark-theme body[data-bg="wallpaper"] .quotesContainer {
+	text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+body[data-bg="wallpaper"] .authorName {
+	background-color: color-mix(
+		in srgb,
+		var(--bg-color-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
+}
+
+html[lang="ur"] .qtRounder {
+	left: -18.5px;
+}
+
+html[lang="ur"] .qtRounder2 {
+	right: -1.5px;
 }
 
 /* ----------Shortcuts----------------- */
@@ -1935,13 +2348,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	height: calc(var(--shortcut-size) + var(--gap) * 2);
 	position: fixed;
 	/* background: gold; */
-	left: 0;
-	right: 0;
+	inset-inline-start: 0;
+	inset-inline-end: 0;
 	bottom: 0;
 	overflow: scroll;
 	scrollbar-width: none;
 	margin: auto;
 }
+
 #shortcuts-section::-webkit-scrollbar {
 	display: none;
 }
@@ -1999,8 +2413,8 @@ body #bookmarkButton.bookmark-button.rotate {
 	content: "";
 	position: absolute;
 	top: 0;
-	left: 0;
-	right: 0;
+	inset-inline-start: 0;
+	inset-inline-end: 0;
 	bottom: 0;
 	background-color: var(--accentLightTint-blue);
 	z-index: -1;
@@ -2029,8 +2443,8 @@ body #bookmarkButton.bookmark-button.rotate {
 	visibility: hidden;
 	position: absolute;
 	bottom: -30px;
-	right: 0;
-	left: 50%;
+	inset-inline-end: 0;
+	inset-inline-start: 50%;
 	transform: translateX(-50%);
 	/* Center horizontally */
 	margin: auto;
@@ -2038,6 +2452,9 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: fit-content;
 	text-align: center;
 	color: var(--textColorDark-blue);
+	background-color: transparent;
+	padding: 0;
+	border-radius: 0;
 	opacity: 0;
 	transition: all 0.3s;
 	font-size: 1rem;
@@ -2045,6 +2462,20 @@ body #bookmarkButton.bookmark-button.rotate {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 120px;
+}
+
+body[data-bg="wallpaper"] .shortcuts .shortcut-name {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
+	padding: 0px 6px;
+	border-radius: 5px;
+}
+
+:dir(rtl) .shortcuts .shortcut-name {
+	transform: translateX(50%);
 }
 
 .shortcuts:hover .shortcut-name {
@@ -2085,8 +2516,17 @@ body #bookmarkButton.bookmark-button.rotate {
 	height: 100%;
 	width: 100%;
 	border-radius: 100%;
+	filter: none;
+	mix-blend-mode: normal;
 }
 
+/* Adaptive Icons styling */
+.adaptive-icons .shortcuts .shortcutLogoContainer img {
+	height: calc(100% * 0.7071) !important;
+	width: calc(100% * 0.7071) !important;
+	filter: grayscale(1);
+	mix-blend-mode: screen;
+}
 /* ----------end of Shortcuts----------------- */
 
 /* -----------Ai-Tools----------------- */
@@ -2095,7 +2535,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: fit-content;
 	border-radius: 100px;
 	position: fixed;
-	left: var(--gap);
+	inset-inline-start: var(--gap);
 	bottom: var(--gap);
 	margin: auto;
 	display: flex;
@@ -2105,6 +2545,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	scrollbar-width: none; /* Firefox */
 	-ms-overflow-style: none; /* IE and Edge */
 }
+
 .aiToolsCont::-webkit-scrollbar {
 	display: none; /* Chrome, Safari, Edge, Opera */
 }
@@ -2112,7 +2553,6 @@ body #bookmarkButton.bookmark-button.rotate {
 .aiToolsCont .hangno {
 	background-color: var(--accentLightTint-blue);
 	height: 100%;
-	/* width: 131px; */
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -2122,10 +2562,18 @@ body #bookmarkButton.bookmark-button.rotate {
 	cursor: pointer;
 }
 
+body[data-bg="wallpaper"] .aiToolsCont .hangno {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) * 1.75),
+		transparent
+	);
+}
+
 .aiToolsCont .hangno .icon {
 	width: 26px;
 	height: 26px;
-	margin-right: 12px;
+	margin-inline-end: 12px;
 }
 
 .aiToolsCont .hangno .label {
@@ -2137,11 +2585,9 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 .aiToolsCont .toolsCont {
-	/* display: flex; */
 	display: none;
-	/* background-color: orange; */
 	position: relative;
-	margin-left: 30px;
+	margin-inline-start: 30px;
 	transition: all 500ms;
 	gap: 0;
 	transform-origin: left;
@@ -2156,7 +2602,15 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 6px;
 	background-color: var(--accentLightTint-blue);
 	border-radius: 6px;
-	left: -18px;
+	inset-inline-start: -18px;
+}
+
+body[data-bg="wallpaper"] .aiToolsCont .toolsCont::before {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
 }
 
 .aiToolsCont .toolsCont a {
@@ -2165,7 +2619,8 @@ body #bookmarkButton.bookmark-button.rotate {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 16px;
+	padding-block: 0;
+	padding-inline: 12px 17px;
 	border-radius: 100px;
 	text-decoration: none;
 	color: var(--textColorDark-blue);
@@ -2177,17 +2632,227 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 .aiToolsCont .toolsCont a:hover {
-	background-color: var(--bg-color-blue);
 	box-shadow: inset 0 0 0 1px var(--darkColor-blue);
 }
 
-.aiToolsCont .toolsCont .tIcon {
-	width: 26px;
-	height: 26px;
-	/* background-color: turquoise; */
-	margin-right: 12px;
+body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
 }
 
+.aiToolsCont .toolsCont .tIcon {
+	width: 30px;
+	height: 30px;
+	margin-inline-end: 10px;
+}
+
+/* Settings Modal Styles */
+.ai-settings-modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: var(--bg-color-blue);
+	color: var(--textColorDark-blue);
+	border-radius: var(--round);
+	padding: 30px 35px;
+	box-shadow: 0 0px 10px rgba(0, 0, 0, 0.1);
+	z-index: 1001;
+	width: 380px;
+}
+
+.ai-settings-modal .ai-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 1.1rem;
+	opacity: 0.96;
+}
+
+.ai-settings-modal .ai-close-button {
+	cursor: pointer;
+	margin: 5px 0;
+	color: var(--darkerColor-blue);
+}
+
+.ai-settings-modal #aiSettingsIntro {
+	font-size: 0.9rem;
+	margin-bottom: 20px;
+}
+
+.ai-settings-modal .ai-tools-list {
+	max-height: 260px;
+	overflow-y: auto;
+	scroll-behavior: smooth;
+}
+
+.ai-settings-modal .ai-tools-list::-webkit-scrollbar {
+	width: 5px;
+}
+
+.ai-settings-modal .ai-tools-list::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.ai-settings-modal .ai-tools-list::-webkit-scrollbar-thumb {
+	background-color: var(--darkColor-blue);
+	border-radius: 3px;
+}
+
+.ai-settings-modal .ai-tools-list::-webkit-scrollbar-thumb:hover {
+	background-color: var(--darkerColor-blue);
+	border-radius: 3px;
+}
+
+@-moz-document url-prefix() {
+	.ai-settings-modal .ai-tools-list {
+		scrollbar-width: thin;
+		scrollbar-color: var(--darkColor-blue) transparent;
+	}
+}
+
+.ai-settings-modal .ai-tools-list #aiToolsForm .ai-tool-option {
+	margin-block: 0 10px; /* top and bottom */
+	margin-inline: 0 4px; /* start and end */
+	padding: 10px 16px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--accentLightTint-blue);
+	border: none;
+	border-radius: 10px;
+	font-size: 0.95rem;
+	will-change: transform;
+}
+
+.ai-settings-modal .ai-tools-list #aiToolsForm .ai-tool-option:last-child {
+	margin-bottom: 0;
+}
+
+#aiToolsForm .ai-tool-option input[type="checkbox"] {
+	vertical-align: middle;
+	margin-inline-end: 8px;
+	accent-color: var(--darkColor-blue);
+	height: 15px;
+	width: 15px;
+}
+
+.ai-settings-modal .ai-modal-footer {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 22px;
+}
+
+.ai-settings-modal .ai-reset-button,
+.ai-settings-modal .ai-save-button {
+	width: 140px;
+	padding: 10px 15px;
+	font-size: 0.9rem;
+	border-radius: 20px;
+	background: var(--darkColor-blue);
+	color: var(--whitishColor-blue);
+	border: none;
+	cursor: pointer;
+}
+
+.ai-settings-modal .ai-reset-button:hover,
+.ai-settings-modal .ai-save-button:hover {
+	background: var(--darkerColor-blue);
+}
+
+#aiToolsForm .ai-tool-reorder {
+	display: flex;
+	flex-direction: row;
+	gap: 6px;
+}
+
+#aiToolsForm .ai-tool-reorder button {
+	background: color-mix(in srgb, var(--whitishColor-blue) 60%, transparent);
+	color: var(--darkColor-blue);
+	border: 1px solid var(--darkColor-blue);
+	border-radius: 6px;
+	width: 26px;
+	height: 22px;
+	font-size: 0.8rem;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#aiToolsForm .ai-tool-reorder button:hover {
+	color: var(--darkerColor-blue);
+	border-color: var(--darkerColor-blue);
+}
+
+#aiToolsForm .ai-tool-reorder button:active {
+	transform: scale(0.95);
+}
+
+#aiToolsForm .ai-tool-reorder button:disabled {
+	cursor: not-allowed;
+	opacity: 0.4;
+}
+
+#aiToolsForm .ai-tool-reorder button:disabled:hover {
+	transform: none;
+}
+
+/* Animation classes for reordering */
+.reorder-animate-up {
+	position: relative;
+	z-index: 10;
+	transform: translateY(calc(-1 * var(--move-distance)));
+	transition: transform 0.3s var(--md-motion-ease);
+}
+
+.reorder-animate-down {
+	position: relative;
+	z-index: 5;
+	transform: translateY(var(--move-distance));
+	transition: transform 0.3s var(--md-motion-ease);
+}
+
+/* Disabled reset button styling */
+.ai-settings-modal .ai-reset-button:disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* Reset Animation Styles */
+@keyframes resetShake {
+	0%,
+	100% {
+		margin-left: 0;
+	}
+	25% {
+		margin-left: -1px;
+	}
+	75% {
+		margin-left: 1px;
+	}
+}
+
+@keyframes resetFlash {
+	0%,
+	100% {
+		background-color: var(--accentLightTint-blue);
+		transform: scale(1);
+	}
+	50% {
+		background-color: color-mix(
+			in srgb,
+			var(--darkColor-blue) 20%,
+			var(--accentLightTint-blue)
+		);
+		transform: scale(1.02);
+	}
+}
 /* -----------End of Ai-Tools---------- */
 
 /* ---------------Menu-bar-css---------------- */
@@ -2198,7 +2863,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	width: 100%;
 	height: 100%;
 	top: 0;
-	right: 0;
+	inset-inline-end: 0;
 	z-index: 999;
 	opacity: 0;
 	/*we are increasing opacity in js file*/
@@ -2209,24 +2874,21 @@ body #bookmarkButton.bookmark-button.rotate {
 .menuBar .menuCont {
 	position: fixed;
 	top: 0;
-	right: 0;
+	inset-inline-end: 0;
 	height: 100%;
 	width: 400px;
 	/* change on some languages for fix the buttons */
 	transition: all 0.5s;
 	transform: translateX(100%);
 	background-color: var(--accentLightTint-blue);
-	border-bottom-left-radius: var(--round);
+	border-end-start-radius: var(--round);
 }
 
 .menuBar .menuCont .topRounder {
 	width: var(--round);
-	/*30px*/
 	height: var(--round);
-	/* background-color: #17a638; */
 	position: absolute;
-	left: -30px;
-	/* transform: translateX(-100%); */
+	inset-inline-start: -30px;
 }
 
 .menuCont .topDiv {
@@ -2255,10 +2917,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	height: fit-content;
 	color: var(--textColorDark-blue);
 	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
+	inset: 0;
 	margin: auto;
 	transform: translateY(-50%);
 }
@@ -2272,15 +2931,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	transform: translateX(100%);
 	opacity: 0;
 	overflow-y: scroll;
-	/* Allow vertical scrolling only */
 	overflow-x: hidden;
-	/* Hide horizontal overflow */
 }
 
 .menuCont .optCont .page {
 	width: 100%;
 	padding: 0 var(--gap) var(--gap) var(--gap);
 	position: absolute;
+	scroll-behavior: smooth;
 	transition: all 0.6s;
 }
 
@@ -2348,8 +3006,8 @@ body #bookmarkButton.bookmark-button.rotate {
 .tilesCont .tiles .icon {
 	width: 24px;
 	height: 24px;
-	margin-left: 13px;
-	margin-right: 13px;
+	margin-inline-start: 13px;
+	margin-inline-end: 13px;
 }
 
 .divider {
@@ -2361,52 +3019,11 @@ body #bookmarkButton.bookmark-button.rotate {
 }
 
 #divider2 {
-	margin-top: 0px;
+	margin-top: 30px;
 }
 
-/* --- 🔴⚪🟡style for toggle buttons---- */
-.switch {
-	position: relative;
-	display: inline-block;
-	min-width: 60px;
-	height: 34px;
-	margin-left: 8px;
-}
-
-/* Hide the default checkbox input */
-.switch input {
-	display: none;
-}
-
-/* Styling for the slider */
-.toggle {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: var(--bg-color-blue);
-	/* Background color when off */
-	transition: 0.4s;
-	border-radius: 34px;
-}
-
-/* Styling for the slider when it's in the "on" position */
-.toggle:before {
-	position: absolute;
-	content: "";
-	height: 16px;
-	width: 16px;
-	left: 9px;
-	bottom: 9px;
-	background-color: var(--accentLightTint-blue);
-	/* Slider color when on */
-	transition: 0.175s;
-	border-radius: 50%;
-}
-
-#shortcutEditButton {
+#shortcutEditButton,
+#aiToolsEditButton {
 	fill: var(--darkerColor-blue);
 	display: flex;
 	align-items: center;
@@ -2426,6 +3043,47 @@ body #bookmarkButton.bookmark-button.rotate {
 	pointer-events: none;
 }
 
+/* --- 🔴⚪🟡style for toggle buttons---- */
+.switch {
+	position: relative;
+	display: inline-block;
+	min-width: 60px;
+	height: 34px;
+	margin-inline-start: 8px;
+}
+
+/* Hide the default checkbox input */
+.switch input {
+	display: none;
+}
+
+/* Styling for the slider */
+.toggle {
+	position: absolute;
+	cursor: pointer;
+	inset: 0;
+	background-color: var(--bg-color-blue);
+	/* Background color when off */
+	transition: 0.4s;
+	border-radius: 34px;
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+/* Styling for the slider when it's in the "on" position */
+.toggle:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	inset-inline-start: 9px;
+	bottom: 9px;
+	background-color: var(--accentLightTint-blue);
+	/* Slider color when on */
+	transition: 0.175s;
+	border-radius: 50%;
+}
+
 /* Apply styles when the input is checked (on) */
 input:checked + .toggle {
 	background-color: var(--darkColor-blue);
@@ -2435,7 +3093,7 @@ input:checked + .toggle {
 input:checked + .toggle:before {
 	height: 24px;
 	width: 24px;
-	left: 5px;
+	inset-inline-start: 5px;
 	bottom: 5px;
 	transform: translateX(26px);
 }
@@ -2511,7 +3169,7 @@ input:checked + .toggle:before {
 
 .location-suggestion-box {
 	position: absolute;
-	margin-right: var(--gap);
+	margin-inline-end: var(--gap);
 	width: -webkit-fill-available;
 	width: -moz-available;
 	background-color: var(--whitishColor-blue);
@@ -2602,9 +3260,7 @@ input:checked + .toggle:before {
 	align-items: center;
 	height: 50px;
 	position: sticky;
-	top: 0;
-	left: 0;
-	right: 0;
+	inset: 0;
 	z-index: 100;
 	background-color: var(--accentLightTint-blue);
 }
@@ -2633,18 +3289,40 @@ input:checked + .toggle:before {
 	transition: transform 0.3s ease;
 }
 
-#newShortcutButton:active svg {
+#newShortcutButton:not(.inactive):active svg {
 	transform: scale(1.2);
-}
-
-.rotateResetButton {
-	transform: rotate(-360deg);
-	transition: transform 0.3s ease;
 }
 
 #newShortcutButton.inactive {
 	opacity: 0.5;
-	pointer-events: none;
+	cursor: not-allowed;
+}
+
+.reset-shift-animation {
+	animation: resetShift 0.3s ease;
+}
+
+@keyframes resetShift {
+	0%,
+	100% {
+		margin-left: 0;
+	}
+	50% {
+		margin-left: 3px;
+	}
+}
+
+.rotate-animation {
+	animation: rotate-button 0.5s ease;
+}
+
+@keyframes rotate-button {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(-360deg);
+	}
 }
 
 .pageTitle {
@@ -2671,7 +3349,12 @@ input:checked + .toggle:before {
 	margin-bottom: 16px;
 	background-color: var(--bg-color-blue);
 	border-radius: 13px;
-	padding: 15px 10px 15px 15px;
+	padding: 15px 10px;
+	padding-inline-start: 8px;
+	position: relative;
+	transition: transform 0.3s var(--md-motion-ease) opacity 0.2s ease;
+	/* Enable hardware acceleration */
+	will-change: transform, opacity;
 }
 
 .shortcutSettingsEntry:last-child {
@@ -2679,23 +3362,69 @@ input:checked + .toggle:before {
 }
 
 .shortcutSettingsEntry input {
-	width: 95%;
+	width: calc(100% - 18px);
 	background: none;
 	border: none;
+	margin-inline-start: 8px;
+	color: var(--textColorDark-blue);
+	text-overflow: ellipsis;
 }
 
 .shortcutSettingsEntry .shortcutName {
 	font-size: 1.1rem;
-	color: var(--textColorDark-blue);
-	text-overflow: ellipsis;
 }
 
 .shortcutSettingsEntry .URL {
 	font-size: 0.84rem;
-	color: var(--textColorDark-blue);
 	opacity: 0.9;
 	margin-top: -3px;
-	text-overflow: ellipsis;
+}
+
+/* Drag and drop styles */
+.shortcutSettingsEntry.dragging {
+	opacity: 0.5;
+	transform: scale(1.02);
+	pointer-events: none;
+	transition: none;
+	z-index: 1000;
+	backface-visibility: hidden;
+}
+
+.grip-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 54px;
+	padding: 0 6px;
+	cursor: grab;
+	color: var(--textColor);
+	opacity: 0.5;
+}
+
+.grip-container:hover {
+	opacity: 1;
+}
+
+.grip-container svg {
+	pointer-events: none;
+	transition: transform 0.2s ease;
+}
+
+.grip-container:hover svg {
+	transform: scale(1.1);
+}
+
+.shortcutSettingsEntry.dragging .grip-container {
+	pointer-events: none;
+}
+
+/* Disable hover effects during dragging */
+.dragging-ongoing .shortcutSettingsEntry .grip-container:hover {
+	opacity: 0.5;
+}
+
+.dragging-ongoing .shortcutSettingsEntry .grip-container:hover svg {
+	transform: none;
 }
 
 .delete button {
@@ -2712,14 +3441,14 @@ input:checked + .toggle:before {
 	transition: 0.3s all;
 }
 
-.delete button:hover {
+.delete button:not(.inactive):hover {
 	fill: white;
 	background: var(--darkColor-blue);
 }
 
 .delete button.inactive {
 	opacity: 0.5;
-	pointer-events: none;
+	cursor: not-allowed;
 }
 
 .addShortcutContainer button {
@@ -2739,18 +3468,9 @@ input:checked + .toggle:before {
 
 /* ---------------Menu-bar-css---------------- */
 
-/* --------------Theming stuff------------------ */
-.themingStuff {
-	margin-top: 11px;
-	position: relative;
-	width: 100%;
-	height: 50px;
-	display: flex;
-	justify-content: space-between;
-	gap: var(--gap);
-}
-
-.languageSection {
+/* --------------Language & Dark Mode Selection-------------- */
+.languageSection,
+.darkModeSection {
 	width: 100%;
 	height: 50px;
 	display: flex;
@@ -2759,33 +3479,25 @@ input:checked + .toggle:before {
 	margin-top: 30px;
 }
 
-.languageSelector {
+.languageSelector,
+.darkModeSelector {
 	background-color: var(--whitishColor-blue);
 	align-items: center;
 	justify-content: center;
 	height: fit-content;
-	/* width: 80%; */
-	width: 240px;
+	min-width: 240px;
+	width: 100%;
 	border: 2px solid transparent;
 	/* adding transparent border on focus it will be turned to theme color*/
 	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-	/* 5 divs in the first row */
-	grid-auto-rows: auto;
-	grid-gap: 10px;
 	padding: 12px;
 	color: var(--textColorDark-blue);
-	/* padding-right: 0px; */
 	border-radius: 26px;
 	appearance: none;
-	/* Remove default browser styles */
-	-webkit-appearance: none;
-	/* For Safari */
 	-moz-appearance: none;
-	/* For Firefox */
 	cursor: pointer;
-	padding-left: 13px;
-
+	padding-inline-start: 14px;
+	font-size: 0.82rem;
 	@-moz-document url-prefix() {
 		/* Scrollbar styles for Firefox */
 		scrollbar-width: thin;
@@ -2807,11 +3519,23 @@ input:checked + .toggle:before {
 	border-radius: 3px;
 }
 
-.languageSelector:focus {
+.languageSelector:focus,
+.darkModeSelector:focus {
 	border: 2px solid var(--darkColor-blue);
 	/* color matching border on focus */
 	outline: none;
 	/* Removes the default outline */
+}
+
+/* --------------Theming stuff------------------ */
+.themingStuff {
+	margin-top: 27px;
+	position: relative;
+	width: 100%;
+	height: 50px;
+	display: flex;
+	justify-content: space-between;
+	gap: var(--gap);
 }
 
 .colorsContainer {
@@ -2827,7 +3551,6 @@ input:checked + .toggle:before {
 	grid-auto-rows: auto;
 	grid-gap: 10px;
 	padding: 10px;
-	/* padding-right: 0px; */
 	border-radius: 26px;
 }
 
@@ -2840,7 +3563,7 @@ input:checked + .toggle:before {
 	width: 36px;
 	border-radius: 18px;
 	outline: none;
-	/* margin-right: 10px; */
+	/* margin-inline-end: 10px; */
 	cursor: pointer;
 }
 
@@ -2905,16 +3628,17 @@ input:checked + .toggle:before {
 	background-color: var(--whitishColor-blue);
 	height: 100%;
 	aspect-ratio: 1/1;
-	right: 0;
+	inset-inline-end: 0;
 	border-radius: 100%;
 	z-index: 2;
 }
 
-.languageIcon {
+.languageIcon,
+.darkModeIcon {
 	background-color: var(--whitishColor-blue);
 	height: 100%;
 	aspect-ratio: 1/1;
-	right: 0;
+	inset-inline-end: 0;
 	border-radius: 100%;
 	z-index: 2;
 	display: flex;
@@ -3049,6 +3773,7 @@ input:checked + .toggle:before {
 #colorPicker {
 	display: none;
 }
+
 .colorPickerLabel {
 	grid-column: span 3;
 	width: 100%;
@@ -3064,6 +3789,7 @@ input:checked + .toggle:before {
 	border: 2px solid transparent;
 	transition: background-color 0.3s ease;
 }
+
 .colorPickerLabel:hover {
 	background: var(--bg-color-blue);
 }
@@ -3073,7 +3799,7 @@ input:checked + .toggle:before {
 
 #menuButton {
 	position: fixed;
-	right: var(--gap);
+	inset-inline-end: var(--gap);
 	bottom: var(--gap);
 	width: 50px;
 	height: 50px;
@@ -3089,8 +3815,6 @@ input:checked + .toggle:before {
 /* ---------------------- */
 #menuCloseButton {
 	position: relative;
-	/* position: absolute; */
-	/* bottom: var(--gap); */
 	width: 42px;
 	height: 42px;
 	min-width: 42px;
@@ -3102,7 +3826,9 @@ input:checked + .toggle:before {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	padding: 6px 0 6px 42px;
+	padding-block: 6px;
+	padding-inline-start: 42px;
+	padding-inline-end: 0;
 	border-radius: 100px;
 	overflow: hidden;
 	/* Hide the overflow when content expands */
@@ -3123,22 +3849,26 @@ input:checked + .toggle:before {
 	transform: translateX(-20px);
 	width: 0;
 	max-width: fit-content;
-	padding-right: 0;
+	padding-inline-end: 0;
 	z-index: 1;
 	transition: all 0.4s ease;
 	overflow: hidden;
 }
 
+:dir(rtl) #menuCloseButton::after {
+	transform: translateX(20px);
+}
+
 #menuCloseButton:hover::after {
 	width: 100%;
 	opacity: 1;
-	padding-right: 11px;
+	padding-inline-end: 11px;
 	transform: translateX(0px);
 }
 
 #menuCloseButton .icon {
 	position: absolute;
-	left: 6px;
+	inset-inline-start: 6px;
 	background: radial-gradient(#fff 66%, transparent 66%);
 	width: 30px;
 	height: 30px;
@@ -3171,15 +3901,24 @@ input:checked + .toggle:before {
 .dropdown-content {
 	background: var(--accentLightTint-blue);
 	border-radius: 16px;
-	display: none;
 	position: absolute;
 	min-width: 160px;
 	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 	z-index: 1;
 	top: 50px;
-	left: -15px;
+	inset-inline-start: -15px;
 	overflow-y: auto;
+	max-height: 0;
+	opacity: 0;
+	transition: max-height 0.21s var(--md-motion-accelerate),
+		opacity 0.2s var(--md-motion-accelerate);
+}
+
+.dropdown-content.show {
 	max-height: 192px;
+	opacity: 1;
+	transition: max-height 0.32s var(--md-motion-decelerate),
+		opacity 0.12s var(--md-motion-decelerate);
 }
 
 .dropdown-content::-webkit-scrollbar {
@@ -3209,6 +3948,15 @@ input:checked + .toggle:before {
 	}
 }
 
+body[data-bg="wallpaper"] .dropdown-content {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) var(--transparency),
+		transparent
+	);
+	backdrop-filter: blur(2px);
+}
+
 .dropdown-content .dropdown-item {
 	padding: 8px 16px;
 	cursor: pointer;
@@ -3230,10 +3978,7 @@ input:checked + .toggle:before {
 	/* border-radius: 16px; */
 	content: "";
 	position: absolute;
-	top: 0px;
-	left: 0;
-	right: 0;
-	bottom: 0px;
+	inset: 0;
 	background-color: var(--bg-color-blue);
 	opacity: 0.8;
 	z-index: -1;
@@ -3250,9 +3995,10 @@ input:checked + .toggle:before {
 .search-dropdown .dropdown-item svg {
 	width: 33px;
 	height: 33px;
-	margin-left: 0;
-	padding: 2px;
+	margin-inline-start: 0;
+	padding: 4px;
 	background-color: var(--darkColor-blue);
+	fill: white;
 	border-radius: 100%;
 }
 
@@ -3276,8 +4022,7 @@ input:checked + .toggle:before {
 	position: fixed;
 	height: 100%;
 	width: 100%;
-	top: 0;
-	left: 0;
+	inset: 0;
 	z-index: 99999;
 }
 
@@ -3307,8 +4052,8 @@ input:checked + .toggle:before {
 		grid-template-columns: auto;
 		padding-bottom: 100px;
 		position: relative;
-		left: 0;
-		right: 0;
+		inset-inline-start: 0;
+		inset-inline-end: 0;
 		margin: 0 auto;
 		padding-top: 60px;
 	}
@@ -3337,21 +4082,23 @@ input:checked + .toggle:before {
 		width: fit-content;
 		bottom: 0;
 		top: 0;
-		left: 300px;
+		inset-inline-start: 300px;
 		/*Because Clock width is 300px*/
-		margin: auto auto auto var(--gap);
+		margin-block: auto;
+		margin-inline-start: var(--gap);
+		margin-inline-end: auto;
 	}
 	.shortcutsContainer {
 		row-gap: 2rem;
 	}
 	#shortcuts-section {
-		padding-left: 30px;
+		padding-inline-start: 30px;
 		margin: 0 auto;
 		overflow-x: scroll;
 		scrollbar-width: none;
 		position: fixed;
 		max-width: 40rem;
-		left: 0;
+		inset-inline-start: 0;
 		bottom: 0;
 	}
 }
@@ -3547,7 +4294,7 @@ input:checked + .toggle:before {
 	#analogClock,
 	#digitalClock {
 		width: 45%;
-		margin-left: 5%;
+		margin-inline-start: 5%;
 		aspect-ratio: 1;
 		height: auto;
 	}
@@ -3630,6 +4377,9 @@ input:checked + .toggle:before {
 		width: calc(94vw / 0.75);
 		margin-left: calc(320px - 94vw);
 		transform-origin: top left;
+		&:dir(rtl) {
+			margin-right: calc(320px - 31vw);
+		}
 	}
 	.resultBox {
 		top: 120px;
@@ -3713,12 +4463,15 @@ input:checked + .toggle:before {
 }
 
 .dark-theme #themeIconSvg,
-.dark-theme #languageSelectorIconSvg {
+.dark-theme #languageSelectorIconSvg,
+.dark-theme #darkModeSelectorIconSvg {
 	fill: #cdcdcd !important;
 }
 
 .dark-theme .languageIcon,
-.dark-theme .languageSelector {
+.dark-theme .languageSelector,
+.dark-theme .darkModeIcon,
+.dark-theme .darkModeSelector {
 	background-color: var(--darkColor-dark);
 	scrollbar-color: var(--darkerColor-blue) transparent;
 }
@@ -3768,6 +4521,10 @@ input:checked + .toggle:before {
 	color: #fff;
 }
 
+.dark-theme #enterBtn:hover {
+	background-color: #0e0e0e !important;
+}
+
 .dark-theme .searchbar.active {
 	outline: 2px solid #696969;
 }
@@ -3781,18 +4538,23 @@ input:checked + .toggle:before {
 }
 
 .dark-theme .tilesContainer .tiles {
-	background-color: var(--darkColor-dark);
+	background-color: var(--darkColor-dark) !important;
 }
 
 .dark-theme #darkFeelsLikeIcon {
 	fill: #fff !important;
 }
 
-.dark-theme .humidityBar .thinLine {
+.dark-theme .humidityBar .slider {
+	background-color: var(--darkColor-dark) !important;
+}
+
+.dark-theme .humidityBar .thinLine,
+.dark-theme .opacityBar .timeline {
 	background-color: #aaaaaa;
 }
 
-.dark-theme .search-engine .darkIconForDarkTheme,
+.dark-theme .search-engine .search-engine-icon,
 .dark-theme .aiDarkIcons {
 	fill: #bbbbbb !important;
 }
@@ -3806,7 +4568,7 @@ input:checked + .toggle:before {
 }
 
 .dark-theme #darkLightTint {
-	fill: #bfbfbf;
+	fill: #bfbfbf !important;
 }
 
 .dark-theme .shortcutsContainer .shortcuts .shortcutLogoContainer {
@@ -3865,6 +4627,14 @@ input:checked + .toggle:before {
 	color: #888888;
 }
 
+.dark-theme .todolistitem .todoeditbtn {
+	color: #616161;
+}
+
+.dark-theme .todolistitem .todoeditbtn:hover {
+	color: #888888;
+}
+
 .dark-theme .bookmark-view-as-button,
 .dark-theme .bookmark-sort-button {
 	color: var(--darkerColor-dark);
@@ -3890,21 +4660,56 @@ input:checked + .toggle:before {
 	fill: var(--textColorDark-blue);
 }
 
+.dark-theme .button-group {
+	background-color: #333333;
+}
+
 .dark-theme #bookmarkList:is(.grid-view) li a:has(.favicon)::after,
 .dark-theme #bookmarkList:is(.grid-view) li a:has(.favicon)::before {
 	background: var(--darkColor-dark);
 }
 
-.dark-theme #editBookmarkModal button:hover {
-	background: #1d1d1d;
+.dark-theme .ai-settings-modal .ai-reset-button:hover,
+.dark-theme .ai-settings-modal .ai-save-button:hover {
+	background: #353535;
+}
+
+.dark-theme .aiToolsCont .toolsCont a:hover {
+	box-shadow: inset 0 0 0 1px var(--darkerColor-dark);
 }
 
 .dark-theme .favicon {
 	filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
 }
 
-.dark-theme .micIcon {
+.dark-theme .micIcon,
+.dark-theme .floating-label-field input {
 	background-color: var(--whitishColor-dark);
+}
+
+.dark-theme body[data-bg="wallpaper"] .micIcon {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-dark) calc(var(--transparency) * 2),
+		transparent
+	);
+}
+
+.dark-theme #searchQ::placeholder {
+	color: #909090 !important;
+}
+
+.dark-theme .floating-label-field input:focus + label,
+.dark-theme .floating-label-field input:not(:placeholder-shown) + label {
+	color: var(--textColorDark-dark);
+}
+
+.dark-theme #editBookmarkModal button {
+	background-color: var(--accentLightTint-dark);
+}
+
+.dark-theme #editBookmarkModal button:hover {
+	background-color: #353535;
 }
 
 .dark-theme #minute,
@@ -4034,16 +4839,18 @@ input:checked + .toggle:before {
 }
 
 /* Background blur overlay */
-#prompt-modal-blur {
-	display: none;
+#prompt-modal-blur,
+.ai-modal-overlay {
 	position: fixed;
-	top: 0;
-	left: 0;
+	inset: 0;
 	width: 100%;
 	height: 100%;
-	/* backdrop-filter: blur(8px); */
 	background: rgba(0, 0, 0, 0.3);
-	z-index: 1000; /* Behind the modal */
+	z-index: 1000;
+}
+
+#prompt-modal-blur {
+	display: none;
 }
 
 /* Modal Content */
@@ -4126,7 +4933,7 @@ input:checked + .toggle:before {
 	padding: 6px 10px;
 	background-color: var(--darkColor-blue);
 	color: white;
-	border-radius: 10px;
+	border-radius: 16px;
 	margin-top: 5px;
 }
 
@@ -4141,4 +4948,161 @@ input:checked + .toggle:before {
 	font-size: 0.8rem;
 }
 
-/* ------------ End of Tips---------- */
+/* ----------------- Toast ----------------- */
+#chromeFooterToast {
+	position: fixed;
+	bottom: 30px;
+	left: 30px;
+	width: 400px;
+	border-radius: 22px;
+	overflow: hidden;
+	transform: translateY(100px);
+	opacity: 0;
+	transition: all 0.5s var(--md-motion-ease);
+	z-index: 9999;
+	pointer-events: none;
+}
+
+#chromeFooterToast.show {
+	transform: translateY(0);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* === TOP TIMER BAR === */
+.toast-timer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 4px;
+	width: 100%;
+	background: transparent;
+	z-index: 20;
+}
+
+.toast-timer-bar {
+	height: 100%;
+	width: 100%;
+	background: var(--darkerColor-blue);
+	transition: width 0.1s linear;
+}
+
+.dark-theme .toast-timer-bar {
+	background: var(--darkColor-dark);
+}
+
+/* === Liquid Glass Base === */
+.liquidGlass-wrapper {
+	position: relative;
+	padding: 24px;
+	padding-inline-end: 40px;
+	border-radius: 22px;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-start;
+	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.25), 0 0 22px rgba(0, 0, 0, 0.16);
+}
+
+/* Blur distortion */
+.liquidGlass-effect {
+	position: absolute;
+	inset: 0;
+	backdrop-filter: blur(5px);
+	filter: url(#glass-distortion);
+	z-index: 1;
+}
+
+/* Tint layer */
+.liquidGlass-tint {
+	position: absolute;
+	inset: 0;
+	background: rgba(255, 255, 255, 0.55);
+	z-index: 2;
+}
+
+/* Shine */
+.liquidGlass-shine {
+	position: absolute;
+	inset: 0;
+	box-shadow: inset 2px 2px 1px rgba(255, 255, 255, 0.55),
+		inset -1px -1px 1px rgba(255, 255, 255, 0.45);
+	z-index: 4;
+}
+
+/* === Content === */
+.toast-content {
+	position: relative;
+	z-index: 20;
+	display: flex;
+	gap: 14px;
+	align-items: flex-start;
+	width: 100%;
+	padding-inline-start: 34px;
+	padding-block: 10px;
+}
+
+/* Vertical bar */
+.toast-bar-vertical {
+	position: absolute;
+	inset-inline-start: 0px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 9px;
+	height: calc(100% - 12px);
+	border-radius: 10px;
+	background: var(--darkColor-blue);
+	z-index: 10;
+}
+
+.toast-body {
+	flex: 1;
+}
+
+.toast-title {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: var(--darkColor-blue);
+	margin-bottom: 8px;
+	text-shadow: 0 1px 3px rgba(255, 255, 255, 0.85);
+}
+
+.toast-message {
+	font-size: 0.96rem;
+	color: black;
+	line-height: 1.5;
+	text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+}
+
+/* Close button */
+.toast-close {
+	position: absolute;
+	top: 12px;
+	inset-inline-end: 12px;
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	z-index: 30;
+}
+
+.toast-close:hover {
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.toast-close svg {
+	width: 100%;
+	height: 100%;
+	padding: 4px;
+	color: var(--textColorDark-blue);
+	opacity: 0.85;
+}
+
+.dark-theme .toast-close svg {
+	color: var(--darkColor-dark);
+}
+/* ------------ End of Toast---------- */

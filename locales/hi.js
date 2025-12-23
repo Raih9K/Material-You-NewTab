@@ -12,11 +12,13 @@ const hi = {
     "editShortcutsList": "सहेजे गए शॉर्टकट",
     "editShortcutsListInfo": "आप \"+\" आइकन पर क्लिक करके नए शॉर्टकट्स जोड़ सकते हैं या शॉर्टकट के नाम या URL पर क्लिक करके मौजूदा शॉर्टकट्स को संपादित कर सकते हैं।",
     "adaptiveIconText": "अनुकूलनीय आइकन",
-    "adaptiveIconInfoText": "शॉर्टकट आइकन थीम रंग से मेल खाते हुए छोटे आकार में दिखेंगे",
+    "adaptiveIconInfoText": "शॉर्टकट आइकन थीम से मेल खाते हुए दिखेंगे",
     "bookmarksText": "बुकमार्क्स",
     "bookmarksInfo": "बुकमार्क्स साइडबार दिखाएँ",
-    "ai_tools_button": "AI-उपकरण",
+    "ai_tools_button": "AI उपकरण",
     "enable_ai_tools": "AI उपकरणों के शॉर्टकट्स प्रदर्शित करें",
+    "aiToolsSettingsText": "AI उपकरण सेटिंग्स",
+    "aiToolsSettingsInfo": "AI उपकरणों के शॉर्टकट्स प्रबंधित करें",
     "googleAppsMenuText": "गूगल ऐप्स",
     "googleAppsMenuInfo": "गूगल ऐप्स के शॉर्टकट्स प्रदर्शित करें",
     "googleAppsHover": "गूगल ऐप्स",
@@ -139,17 +141,25 @@ const hi = {
     "gemini": "जेमिनी",
     "copilot": "कोपायलट",
     "claude": "क्लॉड",
+    "grok": "ग्रोक",
+    "qwen": "क्वेन",
     "perplexity": "पर्प्लेक्सिटी",
     "deepseek": "डीपसीक",
     "metaAI": "मेटा AI",
+    "firefly": "एडोबी फायरफ्लाई",
+    "aiSettingsIntro": "चुनें की कौन से AI शॉर्टकट्स रखने हैं",
+    "resetAISettingsBtn": "रीसेट करें",
 
-    // Theme - delete later
-    "enableDarkMode": "डार्क मोड",
-    "enableDarkModeInfo": "डार्क मोड की थीम सक्षम करें (प्रायोगिक)",
+    // Theme
+    "lightThemed": "डिफ़ॉल्ट (लाइट थीम)",
+    "darkThemed": "डार्क थीम",
+    "systemThemed": "सिस्टम थीम का पालन करें",
 
     // Wallpaper and settings
     "uploadWallpaperText": "वॉलपेपर सेट करें",
     "rangColor": "रंग चुनें",
+    "opacityTitle": "अपारदर्शिता",
+    "adjustOpacityDesc": "इंटरफ़ेस की पारदर्शिता समायोजित करें",
     "backupText": "बैकअप करें",
     "restoreText": "रिस्टोर करें",
     "resetsettings": "सेटिंग्स रीसेट करें",
@@ -166,8 +176,12 @@ const hi = {
     "braveThemeInfo": ' <a href="https://chromewebstore.google.com/category/themes/" target="_blank">क्रोम थीम स्टोर</a> पर जाएं, उपयुक्त थीम डाउनलोड करें और लागू करें।',
     "firefoxThemeInfo": '<a href="https://addons.mozilla.org/firefox/themes/" target="_blank">फ़ायरफ़ॉक्स थीम्स</a> पर जाएँ, अपनी पसंद की थीम डाउनलोड करें और उसे लागू करें।',
     "updateFirefoxHomepage": "होमपेज अपडेट करें",
-    "updateFirefoxHomepageInfo": 'अपने होमपेज को भी नए टैब की तरह बदलने के लिए, <a href="https://github.com/XengShi/materialYouNewTab#-firefox\" target="_blank">इस लिंक</a> पर जाएं और दिए गए निर्देशों का पालन करें।',
+    "updateFirefoxHomepageInfo": 'अपने होमपेज को भी नए टैब की तरह बदलने के लिए, <a href="https://github.com/prem-k-r/MaterialYouNewTab#-firefox\" target="_blank">इस लिंक</a> पर जाएं और दिए गए निर्देशों का पालन करें।',
     "dontShowTips": "इसे फिर से न दिखाएँ",
+
+    // Footer Toast
+    "footerToastTitle": "नीचे एक बैनर दिखाई दे रहा है?",
+    "footerToastMessage": "इसे छिपाने के लिए, उस पर राइट-क्लिक करें और 'नए टैब पेज पर फुटर छिपाएँ' चुनें।",
 
     // Dialog boxes (alerts)
     "okText": "ठीक है",
@@ -187,5 +201,5 @@ const hi = {
     "invalidBackup": "अमान्य बैकअप फ़ाइल चयनित है।",
     "deleteBookmark": "क्या आप \"{title}\" बुकमार्क डिलीट करना चाहते हैं?",
     "UnsupportedBrowser": "आपके ब्राउज़र में बुकमार्क समर्थित नहीं हैं।",
-    "minOneshortcut": "आपको कम से कम एक शॉर्टकट रखना होगा।"
+    "resetShortcutsPrompt": "सभी सहेजे गए शॉर्टकट हटा दिए जाएंगे और डिफ़ॉल्ट पर रीसेट हो जाएंगे। क्या आप जारी रखना चाहते हैं?"
 };

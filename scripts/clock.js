@@ -6,6 +6,13 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Global variables to track intervals and last date strings
+let analogIntervalId = null;
+let digitalIntervalId = null;
+let lastDateString = null;
+let lastDigitalDateString = null;
+let lastGreetingString = null;
+
 // ---------------------- Hiding clock func ----------------------
 // Select elements
 const leftDiv = document.getElementById("leftDiv");
@@ -78,8 +85,26 @@ window.addEventListener("resize", handleClockVisibility);
 
 // ---------------------- Clock func ----------------------
 async function initializeClock() {
+    // Clear any existing intervals first
+    if (analogIntervalId) {
+        clearInterval(analogIntervalId);
+        analogIntervalId = null;
+    }
+    if (digitalIntervalId) {
+        clearInterval(digitalIntervalId);
+        digitalIntervalId = null;
+    }
+
     let clocktype;
-    let intervalId;
+
+    // Track cumulative rotations
+    let cumulativeSecondRotation = 0;
+    let cumulativeMinuteRotation = 0;
+    let cumulativeHourRotation = 0;
+
+    // Initialize on first load
+    let isFirstLoad = true;
+
     // Retrieve current time and calculate initial angles
     var currentTime = new Date();
     var initialSeconds = currentTime.getSeconds();
@@ -87,9 +112,9 @@ async function initializeClock() {
     var initialHours = currentTime.getHours();
 
     // Initialize cumulative rotations
-    let cumulativeSecondRotation = initialSeconds * 6;
-    let cumulativeMinuteRotation = initialMinutes * 6 + (initialSeconds / 10);
-    let cumulativeHourRotation = (30 * initialHours + initialMinutes / 2);
+    cumulativeSecondRotation = initialSeconds * 6;
+    cumulativeMinuteRotation = initialMinutes * 6 + (initialSeconds / 10);
+    cumulativeHourRotation = (30 * initialHours + initialMinutes / 2);
 
     // Apply initial rotations (no need to wait 1s now)
     document.getElementById("second").style.transform = `rotate(${cumulativeSecondRotation}deg)`;
@@ -124,19 +149,21 @@ async function initializeClock() {
             // Localize the day of the month
             var localizedDayOfMonth = localizeNumbers(dayOfMonth.toString(), currentLanguage);
 
+            // DATE DISPLAY FOR ANALOG CLOCK
             const dateDisplay = {
                 bn: `${dayName}, ${localizedDayOfMonth} ${monthName}`,
                 mr: `${dayName}, ${localizedDayOfMonth} ${monthName}`,
                 np: `${dayName}, ${localizedDayOfMonth} ${monthName}`,
-                zh: `${monthName}${dayOfMonth}日${dayName}`,
-                zh_TW: `${monthName}${dayOfMonth}日${dayName}`,
+                zh: `${month + 1}月${dayOfMonth}日，${dayName}`,
+                zh_TW: `${month + 1}月${dayOfMonth}日，${dayName}`,
                 cs: `${dayName}, ${dayOfMonth}. ${monthName}`,
                 hi: `${dayName}, ${dayOfMonth} ${monthName}`,
                 it: `${dayName.substring(0, 3)} ${dayOfMonth} ${monthName.substring(0, 3)}`,
                 ja: `${monthName} ${dayOfMonth}日(${dayName.substring(0, 1)})`,
                 ko: `${monthName} ${dayOfMonth}일(${dayName.substring(0, 1)})`,
+                pl: `${dayName}, ${dayOfMonth}. ${monthName}`,
                 pt: `${dayName.substring(0, 3)}, ${dayOfMonth} ${monthName.substring(0, 3)}`,
-                ru: `${dayName.substring(0, 2)}, ${dayOfMonth} ${monthName.substring(0, 4)}.`,
+                ru: `${dayName}, ${dayOfMonth} ${monthName}`,
                 es: `${dayName.substring(0, 3)}, ${dayOfMonth} ${monthName.substring(0, 3)}`,
                 tr: `${dayName.substring(0, 3)}, ${dayOfMonth} ${monthName}`,
                 uz: `${dayName.substring(0, 3)}, ${dayOfMonth}-${monthName}`,
@@ -146,71 +173,75 @@ async function initializeClock() {
                 az: `${dayName.substring(0, 3)}, ${dayOfMonth} ${monthName.substring(0, 3)}`,
                 sl: `${dayName}, ${dayOfMonth}. ${monthName.substring(0, 3)}.`,
                 hu: `${monthName.substring(0, 3)} ${dayOfMonth}, ${dayName}`,	// Dec 22, Kedd
+                ta: `${monthName} ${localizedDayOfMonth}, ${dayName}`,	// e.g.,மார்கழி 31, ஞாயிறு
                 ur: `${dayName}، ${dayOfMonth} ${monthName}`,
+                de: `${dayName}, ${dayOfMonth}. ${monthName}`,
+                fa: `${dayName}، ${localizedDayOfMonth} ${monthName}`, // e.g., شنبه، ۲۵ اسفند
+                ar_SA: `${dayName}, ${localizedDayOfMonth} ${monthName}`,	// e.g., الجمعة, 31 مايو
+                el: `${dayName.substring(0, 3)} ${dayOfMonth} ${monthName}`, // Κυρ 22 Δεκ
+                th: `วัน${dayName}ที่ ${dayOfMonth} ${monthName}`, // วันอาทิตย์ที่ 22 ธันวาคม
+                uk: `${dayName}, ${dayOfMonth} ${monthName.substring(0, 4)}`,
                 default: `${dayName.substring(0, 3)}, ${monthName.substring(0, 3)} ${dayOfMonth}`	// Sun, Dec 22
             };
-            document.getElementById("date").innerText = dateDisplay[currentLanguage] || dateDisplay.default;
+
+            const newDateString = dateDisplay[currentLanguage] || dateDisplay.default;
+            // Update date if date actually changed or if it's the first time
+            if (newDateString !== lastDateString) {
+                document.getElementById("date").innerText = newDateString;
+                lastDateString = newDateString;
+            }
         }
+    }
+
+    // Helper function to update hand rotation smoothly
+    function updateHandRotation(handId, newRotation, currentTotal, isResetCondition) {
+        let newTotal;
+
+        // Always calculate the shortest path for smooth transitions
+        const diff = newRotation - (currentTotal % 360);
+
+        if (isFirstLoad) {
+            // On first load, just set the initial position
+            newTotal = newRotation;
+        } else if (isResetCondition && Math.abs(diff + 360) < Math.abs(diff)) {
+            // When resetting (like 59s→0s), choose the forward path if it's shorter
+            newTotal = newRotation + (Math.floor(currentTotal / 360) + 1) * 360;
+        } else {
+            // Normal case - maintain current rotation count
+            newTotal = newRotation + Math.floor(currentTotal / 360) * 360;
+        }
+
+        // Apply the smooth transition
+        document.getElementById(handId).style.transition = "transform 1s ease";
+        document.getElementById(handId).style.transform = `rotate(${newTotal}deg)`;
+
+        return newTotal;
     }
 
     function updateanalogclock() {
         var currentTime = new Date();
-        var initialSeconds = currentTime.getSeconds();
-        var initialMinutes = currentTime.getMinutes();
-        var initialHours = currentTime.getHours();
-        let secondreset = false;
-        let hourreset = false;
-        let minreset = false;
+        var currentSeconds = currentTime.getSeconds();
+        var currentMinutes = currentTime.getMinutes();
+        var currentHours = currentTime.getHours();
 
-        // Initialize cumulative rotations
-        let cumulativeSecondRotation = initialSeconds * 6; // 6° per second
-        let cumulativeMinuteRotation = initialMinutes * 6 + (initialSeconds / 10); // 6° per minute + adjustment for seconds
-        let cumulativeHourRotation = (30 * initialHours + initialMinutes / 2); // 30° per hour + adjustment for minutes
+        // Calculate the new rotation values
+        let newSecondRotation = currentSeconds * 6; // 6° per second
+        let newMinuteRotation = currentMinutes * 6 + (currentSeconds / 10); // 6° per minute + adjustment for seconds
+        let newHourRotation = (30 * (currentHours % 12) + currentMinutes / 2); // 30° per hour + adjustment for minutes, 12-hour cycle
 
-        if (secondreset) {
-            document.getElementById("second").style.transition = "none";
-            document.getElementById("second").style.transform = `rotate(0deg)`;
-            secondreset = false;
-            return;
-        }
-        if (minreset) {
-            document.getElementById("minute").style.transition = "none";
-            document.getElementById("minute").style.transform = `rotate(0deg)`;
-            minreset = false;
-            return;
-        }
-        if (hourreset) {
-            document.getElementById("hour").style.transition = "none";
-            document.getElementById("hour").style.transform = `rotate(0deg)`;
-            hourreset = false;
-            return;
-        }
-        if (cumulativeSecondRotation === 0) {
-            document.getElementById("second").style.transition = "transform 1s ease";
-            document.getElementById("second").style.transform = `rotate(361deg)`;
-            secondreset = true;
-        } else {
-            document.getElementById("second").style.transition = "transform 1s ease";
-            document.getElementById("second").style.transform = `rotate(${cumulativeSecondRotation}deg)`;
-        }
+        // Define reset conditions
+        const secondReset = currentSeconds === 0;
+        const minuteReset = currentMinutes === 0 && currentSeconds === 0;
+        const hourReset = currentHours % 12 === 0 && currentMinutes === 0 && currentSeconds === 0;
 
-        if (cumulativeMinuteRotation === 0) {
-            document.getElementById("minute").style.transition = "transform 1s ease";
-            document.getElementById("minute").style.transform = `rotate(361deg)`;
-            minreset = true;
-        } else if (minreset !== true) {
-            document.getElementById("minute").style.transition = "transform 1s ease";
-            document.getElementById("minute").style.transform = `rotate(${cumulativeMinuteRotation}deg)`;
-        }
+        // Update each hand using the helper function
+        cumulativeSecondRotation = updateHandRotation("second", newSecondRotation, cumulativeSecondRotation, secondReset);
+        cumulativeMinuteRotation = updateHandRotation("minute", newMinuteRotation, cumulativeMinuteRotation, minuteReset);
+        cumulativeHourRotation = updateHandRotation("hour", newHourRotation, cumulativeHourRotation, hourReset);
 
-        if (cumulativeHourRotation === 0 && currentTime.getHours() === 0 && currentTime.getMinutes() === 0) {
-            document.getElementById("hour").style.transition = "none"; // Instantly reset at midnight
-            document.getElementById("hour").style.transform = `rotate(0deg)`;
-            hourreset = true;
-        } else if (hourreset !== true) {
-            document.getElementById("hour").style.transition = "transform 1s ease";
-            document.getElementById("hour").style.transform = `rotate(${cumulativeHourRotation}deg)`;
-        }
+        // Mark that we're no longer on first load
+        isFirstLoad = false;
+
         // Update date immediately
         updateDate();
     }
@@ -254,7 +285,7 @@ async function initializeClock() {
         // Localize the day of the month
         const localizedDayOfMonth = localizeNumbers(dayOfMonth.toString(), currentLanguage);
 
-        // Determine the translated short date string based on language
+        // DATE DISPLAY FOR DIGITAL CLOCK
         const dateFormats = {
             az: `${dayName} ${dayOfMonth}`,
             bn: `${dayName}, ${localizedDayOfMonth}`,
@@ -266,16 +297,30 @@ async function initializeClock() {
             hi: `${dayName}, ${dayOfMonth}`,
             ja: `${dayOfMonth}日 (${dayName[0]})`,
             ko: `${dayOfMonth}일 (${dayName[0]})`,
+            pl: `${dayName}, ${dayOfMonth}`,
             pt: `${dayName}, ${dayOfMonth}`,
-            ru: `${dayOfMonth} ${dayName.substring(0, 2)}`,
+            ru: `${dayOfMonth} ${dayName}`,
+            ta: `${localizedDayOfMonth} ${dayName.substring(0, 2)}`,
             vi: `${dayOfMonth} ${dayName}`,
             idn: `${dayOfMonth} ${dayName}`,
             fr: `${dayName} ${dayOfMonth}`, // Mardi 11
             hu: `${dayName} ${dayOfMonth}`, // Kedd 11
             ur: `${dayName}، ${dayOfMonth}`,
+            de: `${dayOfMonth}. ${dayName}`,
+            fa: `${dayName} ${localizedDayOfMonth}`, // e.g. شنبه ۲۵
+            ar_SA: `${dayName}, ${localizedDayOfMonth}`,	// e.g., الجمعة, 31
+            el: `${dayName.substring(0, 3)} ${dayOfMonth}`, // Κυρ 22
+            th: `${dayName}ที่ ${dayOfMonth}`,
+            uk: `${dayOfMonth} ${dayName}`,
             default: `${dayOfMonth} ${dayName.substring(0, 3)}`,	// 24 Thu
         };
-        const dateString = dateFormats[currentLanguage] || dateFormats.default;
+
+        const newDigitalDateString = dateFormats[currentLanguage] || dateFormats.default;
+        // Update date if date actually changed or if it's the first time
+        if (newDigitalDateString !== lastDigitalDateString) {
+            document.getElementById("digidate").textContent = newDigitalDateString;
+            lastDigitalDateString = newDigitalDateString;
+        }
 
         // Handle time formatting based on the selected language
         let timeString;
@@ -283,8 +328,8 @@ async function initializeClock() {
 
         // Array of languages to use "en-US" format
         const specialLanguages = ["tr", "zh", "zh_TW", "ja", "ko", "hu"]; // Languages with NaN in locale time format
-        const localizedLanguages = ["bn", "mr", "np"];
-        // Force the "en-US" format for Bengali, otherwise, it will be localized twice, resulting in NaN
+        const localizedLanguages = Object.keys(numberMappings);
+        // Force the "en-US" format for numeral-localized languages, otherwise, it will be localized twice, resulting in NaN
 
         // Set time options and determine locale based on the current language
         const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: hourformat };
@@ -293,11 +338,11 @@ async function initializeClock() {
 
         // Split the time and period (AM/PM) if in 12-hour format
         if (hourformat) {
-            [timeString, period] = timeString.split(' '); // Split AM/PM if present
+            [timeString, period] = timeString.split(" "); // Split AM/PM if present
         }
 
         // Split the hours and minutes from the localized time string
-        let [hours, minutes] = timeString.split(':');
+        let [hours, minutes] = timeString.split(":");
 
         // Remove leading zero from hours in 12-hour format
         if (hourformat) {
@@ -310,13 +355,40 @@ async function initializeClock() {
 
         // Update the hour, colon, and minute text elements
         document.getElementById("digihours").textContent = localizedHours;
-        document.getElementById("digicolon").textContent = ":"; // Static colon
+        document.getElementById("digicolon").textContent = ":";
         document.getElementById("digiminutes").textContent = localizedMinutes;
 
+        if (isFirefoxAll)
+            document.getElementById("digicolon").classList.add("no-blink");
+
         // Manually set the period for special languages if 12-hour format is enabled
-        if (hourformat && specialLanguages.includes(currentLanguage)) {
+        if (hourformat && (specialLanguages.includes(currentLanguage) || localizedLanguages.includes(currentLanguage))) {
             let realHours = new Date().getHours();
-            period = realHours < 12 ? "AM" : "PM";
+
+            // lANGUAGE-SPECIFIC AM/PM 
+            if (currentLanguage === "fa") {
+                period = realHours < 12 ? "ق.ظ" : "ب.ظ"; // قبل از ظهر / بعد از ظهر
+            } else if (currentLanguage === "ar_SA") {
+                period = realHours < 12 ? "ص" : "م"; // صباحاً / مساءً
+            } else if (currentLanguage === "ta") {
+                if (realHours < 2) {
+                    period = "யாமம்"
+                } else if (realHours < 6) {
+                    period = "வைகறை"
+                } else if (realHours < 10) {
+                    period = "காலை"
+                } else if (realHours < 14) {
+                    period = "நண்பகல்"
+                } else if (realHours < 18) {
+                    period = "எற்பாடு"
+                } else if (realHours < 22) {
+                    period = "மாலை"
+                } else {
+                    period = "யாமம்"
+                }
+            } else {
+                period = realHours < 12 ? "AM" : "PM";
+            }
         }
 
         // Display AM/PM if in 12-hour format
@@ -326,52 +398,79 @@ async function initializeClock() {
             document.getElementById("amPm").textContent = ""; // Clear AM/PM for 24-hour format
         }
 
-        // Update the translated date
-        document.getElementById("digidate").textContent = dateString;
-
         const clocktype1 = localStorage.getItem("clocktype");
+        const dateElement = document.getElementById("date");
         if (clocktype1 === "digital" && isGreetingEnabled) {
-            document.getElementById("date").innerText = getGreeting();
+            const newGreeting = getGreeting();
+            if (newGreeting !== lastGreetingString) {
+                dateElement.style.display = "block";
+                dateElement.innerText = newGreeting;
+                lastGreetingString = newGreeting;
+            }
         } else if (clocktype1 === "digital") {
-            document.getElementById("date").innerText = ""; // Hide the greeting
+            dateElement.style.display = "none";  // Hide the greeting
         }
     }
 
-    // Function to start the clock
-    function startClock() {
-        if (!intervalId) { // Only set interval if not already set
-            intervalId = setInterval(updateanalogclock, 500);
+    // Function to start the analog clock
+    function startAnalogClock() {
+        if (!analogIntervalId) { // Only set interval if not already set
+            analogIntervalId = setInterval(updateanalogclock, 500);
         }
     }
 
-    // Function to stop the clock
-    function stopClock() {
-        clearInterval(intervalId);
-        intervalId = null; // Reset intervalId
+    // Function to stop the analog clock
+    function stopAnalogClock() {
+        if (analogIntervalId) {
+            clearInterval(analogIntervalId);
+            analogIntervalId = null; // Reset intervalId
+        }
+    }
+
+    // Function to start the digital clock
+    function startDigitalClock() {
+        if (!digitalIntervalId) {
+            digitalIntervalId = setInterval(updatedigiClock, 1000);
+        }
+    }
+
+    // Function to stop the digital clock
+    function stopDigitalClock() {
+        if (digitalIntervalId) {
+            clearInterval(digitalIntervalId);
+            digitalIntervalId = null;
+        }
     }
 
     // Initial clock display
     displayClock();
     updateanalogclock();
-    setInterval(updatedigiClock, 1000); // Update digital clock every second
 
-    // Start or stop clocks based on clock type and visibility state
+    // Start appropriate clock based on type
     if (clocktype === "digital") {
         updatedigiClock();
+        startDigitalClock();
+        stopAnalogClock();
     } else if (clocktype === "analog") {
         if (document.visibilityState === "visible") {
-            startClock();
+            startAnalogClock();
             updateDate(); // Immediately update date when clock is analog
         }
+        stopDigitalClock();
     }
 
     // Event listener for visibility change
     document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "visible") {
-            startClock(); // Start the clock if the tab is focused
-            updateDate(); // Update date when the tab becomes visible
+            if (clocktype === "analog") {
+                startAnalogClock(); // Start the analog clock if the tab is focused
+                updateDate(); // Update date when the tab becomes visible
+            } else if (clocktype === "digital") {
+                startDigitalClock(); // Start the digital clock if the tab is focused
+            }
         } else {
-            stopClock(); // Stop the clock if the tab is not focused
+            stopAnalogClock(); // Stop the analog clock if the tab is not focused
+            stopDigitalClock(); // Stop the digital clock if the tab is not focused
         }
     });
 
@@ -380,15 +479,23 @@ async function initializeClock() {
         const digitalClock = document.getElementById("digitalClock");
 
         if (clocktype === "analog") {
-            analogClock.style.display = "block"; // Show the analog clock
+            analogClock.style.display = "block";  // Show the analog clock
             digitalClock.style.display = "none";  // Hide the digital clock
         } else if (clocktype === "digital") {
             digitalClock.style.display = "block";  // Show the digital clock
-            analogClock.style.display = "none";     // Hide the analog clock
+            analogClock.style.display = "none";    // Hide the analog clock
         }
     }
 
     // ----------------------- End of clock display -------------------------
+    function resetDateDisplay() {
+        const dateElement = document.getElementById("date");
+        dateElement.style.display = "block";
+        dateElement.innerText = "";
+        lastGreetingString = null;
+        lastDateString = null;
+        updateDate();
+    }
 
     // Save and load toggle state
     document.addEventListener("DOMContentLoaded", function () {
@@ -414,7 +521,9 @@ async function initializeClock() {
                 localStorage.setItem("clocktype", "digital");
                 clocktype = localStorage.getItem("clocktype");
                 displayClock();
-                stopClock();
+                stopAnalogClock();
+                startDigitalClock();
+                updatedigiClock();
                 saveActiveStatus("timeformatField", "active");
                 saveActiveStatus("greetingField", "active");
             } else {
@@ -423,9 +532,11 @@ async function initializeClock() {
                 greetingCheckbox.disabled = true; // Disable greeting toggle
                 localStorage.setItem("clocktype", "analog");
                 clocktype = localStorage.getItem("clocktype");
-                stopClock();
-                startClock();
+                stopDigitalClock();
+                startAnalogClock();
+                updateanalogclock();
                 displayClock();
+                resetDateDisplay();
                 saveActiveStatus("timeformatField", "inactive");
                 saveActiveStatus("greetingField", "inactive");
             }
@@ -451,3 +562,4 @@ async function initializeClock() {
         loadActiveStatus("greetingField", greetingField);
     });
 }
+
