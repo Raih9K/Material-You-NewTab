@@ -440,26 +440,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to update quotes visibility and handle state changes
     const updateMotivationalQuotesState = () => {
-        const isHideSearchWithEnabled = hideSearchWith.checked;
         const isMotivationalQuotesEnabled = motivationalQuotesCheckbox.checked;
 
-        // Save state to localStorage
+        // Persist user preference
         localStorage.setItem("motivationalQuotesVisible", isMotivationalQuotesEnabled);
 
-        // Handle visibility based on settings
-        if (!isHideSearchWithEnabled) {
-            quotesToggle.classList.add("inactive");
-            motivationalQuotesCont.style.display = "none";
-            clearQuotesStorage();
-            return;
-        }
-
-        // Update UI visibility
-        quotesToggle.classList.remove("inactive");
-        searchWithContainer.style.display = isMotivationalQuotesEnabled ? "none" : "flex";
+        // Quotes are independent from the search switch: toggle quotes UI only
+        quotesToggle.classList.toggle("inactive", !isMotivationalQuotesEnabled);
         motivationalQuotesCont.style.display = isMotivationalQuotesEnabled ? "flex" : "none";
 
-        // Load quotes if motivational quotes are enabled
+        // Load or clear quotes based on the user's choice
         if (isMotivationalQuotesEnabled) {
             loadAndDisplayQuote(false);
         } else {
@@ -471,8 +461,12 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMotivationalQuotesState();
 
     // Event Listeners
-    hideSearchWith.addEventListener("change", () => {
-        searchWithContainer.style.display = "flex";
+    hideSearchWith.addEventListener("change", (e) => {
+        // Use existing initialization helper from search.js to toggle search UI
+        if (typeof initShortCutSwitch === 'function') {
+            initShortCutSwitch(e.target);
+        }
+        // Update quotes state independently (do not force-hide/show quotes)
         updateMotivationalQuotesState();
     });
 
