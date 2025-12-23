@@ -89,7 +89,7 @@ document.getElementById("imageUpload").addEventListener("change", function (even
             document.body.style.setProperty("--bg-image", `url(${imageUrl})`);
             saveImageToIndexedDB(file, false)
                 .then(() => {
-                    toggleBackgroundType(true);
+                    updateTextBackground(true);
                     URL.revokeObjectURL(imageUrl); // Clean up memory
                 })
                 .catch(error => console.error(error));
@@ -115,16 +115,36 @@ async function applyRandomImage(showConfirmation = true) {
 
         document.body.style.setProperty("--bg-image", `url(${imageUrl})`);
         await saveImageToIndexedDB(blob, true);
-        toggleBackgroundType(true);
+        updateTextBackground(true);
         setTimeout(() => URL.revokeObjectURL(imageUrl), 2000); // Delay URL revocation
     } catch (error) {
         console.error("Error fetching random image:", error);
     }
 }
 
-// Function to update the background type attribute
-function toggleBackgroundType(hasWallpaper) {
-    document.body.setAttribute("data-bg", hasWallpaper ? "wallpaper" : "color");
+// Function to update solid background behind userText, date, greeting and shortcut names
+function updateTextBackground(hasWallpaper) {
+    const userText = document.getElementById("userText");
+    const date = document.getElementById("date");
+    const shortcuts = document.querySelectorAll(".shortcuts .shortcut-name");
+
+    if (hasWallpaper) {
+        document.body.setAttribute('data-bg', 'wallpaper')
+    } else {
+        document.body.setAttribute('data-bg', 'color')
+    }
+
+    // Change bg-color for userText and date
+    [userText, date].forEach(element => {
+        element.style.backgroundColor = hasWallpaper ? "var(--accentLightTint-blue)" : "";
+    });
+
+    // Update styles for shortcuts
+    shortcuts.forEach(shortcut => {
+        shortcut.style.backgroundColor = hasWallpaper ? "var(--accentLightTint-blue)" : "";
+        shortcut.style.padding = hasWallpaper ? "0px 6px" : "";
+        shortcut.style.borderRadius = hasWallpaper ? "5px" : "";
+    });
 }
 
 // Check and update image on page load
@@ -136,7 +156,7 @@ function checkAndUpdateImage() {
 
             // No image or invalid data
             if (!blob || !savedTimestamp || isNaN(lastUpdate)) {
-                toggleBackgroundType(false);
+                updateTextBackground(false);
                 return;
             }
 
@@ -145,7 +165,7 @@ function checkAndUpdateImage() {
 
             if (imageType === "upload") {
                 document.body.style.setProperty("--bg-image", `url(${imageUrl})`);
-                toggleBackgroundType(true);
+                updateTextBackground(true);
                 return;
             }
 
@@ -155,7 +175,7 @@ function checkAndUpdateImage() {
             } else {
                 // Reapply the saved random image
                 document.body.style.setProperty("--bg-image", `url(${imageUrl})`);
-                toggleBackgroundType(true);
+                updateTextBackground(true);
             }
 
             // Clean up the Blob URL after setting the background
@@ -163,7 +183,7 @@ function checkAndUpdateImage() {
         })
         .catch((error) => {
             console.error("Error loading image details:", error);
-            toggleBackgroundType(false);
+            updateTextBackground(false);
         });
 }
 
@@ -185,7 +205,7 @@ document.getElementById("clearImage").addEventListener("click", async function (
             try {
                 await clearImageFromIndexedDB();
                 document.body.style.removeProperty("--bg-image");
-                toggleBackgroundType(false);
+                updateTextBackground(false);
             } catch (error) {
                 console.error(error);
             }
