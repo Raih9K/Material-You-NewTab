@@ -8,6 +8,8 @@
 
 
 const apiUrl = "https://quotes-api-self.vercel.app/quote/";
+// const metadataUrl = "https://prem-k-r.github.io/multilingual-quotes-api/minified/metadata.json";
+// const baseQuoteUrl = "https://prem-k-r.github.io/multilingual-quotes-api/minified/";
 // Credits: https://github.com/well300/quotes-api
 
 const quotesContainer = document.querySelector('.quotesContainer');
@@ -125,21 +127,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to update quotes visibility
     const updateMotivationalQuotesState = () => {
-        const isHideSearchWithEnabled = hideSearchWith.checked;
         const isMotivationalQuotesEnabled = motivationalQuotesCheckbox.checked;
 
         // Save state to localStorage
         localStorage.setItem("motivationalQuotesVisible", isMotivationalQuotesEnabled);
 
-        if (!isHideSearchWithEnabled) {
-            quotesToggle.classList.add("inactive");
-            motivationalQuotesCont.style.display = "none";
-            clearQuotes();
-            return;
-        }
-
         quotesToggle.classList.remove("inactive");
-        searchWithContainer.style.display = isMotivationalQuotesEnabled ? "none" : "flex";
+        // Don't hide search-with container - let it be controlled by shortcut_switchcheckbox
+        // searchWithContainer visibility is controlled by search.js via shortcut_switchcheckbox
         motivationalQuotesCont.style.display = isMotivationalQuotesEnabled ? "flex" : "none";
 
         if (isMotivationalQuotesEnabled) {
@@ -155,9 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMotivationalQuotesState();
 
     // Event Listeners
-    hideSearchWith.addEventListener("change", () => {
-        searchWithContainer.style.display = "flex";
-        updateMotivationalQuotesState();
-    });
+    // Note: hideSearchWith (shortcut_switchcheckbox) is handled by search.js
+    // We don't need to interfere with search-with container visibility here
     motivationalQuotesCheckbox.addEventListener("change", updateMotivationalQuotesState);
 });
